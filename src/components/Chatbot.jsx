@@ -36,7 +36,7 @@ export default function Chatbot({ open, onClose, context }) {
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-api-key": process.env.REACT_APP_API_KEY },
         body: JSON.stringify({ message: userInput })
       })
       const data = await res.json()
