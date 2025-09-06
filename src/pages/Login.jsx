@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
+import { Input } from "../components/ui/Input";
+import { Button } from "../components/ui/Button";
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -6,20 +9,17 @@ export default function Login({ onLogin }) {
 
   function handleSubmit(e) {
     e.preventDefault();
-    // TODO: Add real auth here
     if (email && password) {
-      onLogin(); // call parent to update state
+      onLogin();
     }
   }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-      <Card className="w-full max-w-md shadow-lg rounded-2xl">
+      <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-center text-2xl font-bold">
-            Welcome Back
-          </CardTitle>
-          <p className="text-center text-sm text-muted-foreground">
+          <CardTitle>Welcome Back</CardTitle>
+          <p className="text-center text-sm text-gray-500">
             Sign in to your account
           </p>
         </CardHeader>
