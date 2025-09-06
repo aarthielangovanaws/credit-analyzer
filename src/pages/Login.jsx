@@ -12,7 +12,7 @@ export default function Login({ onLogin }) {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[var(--bg)] p-4">
+    <div className="login-wrapper">
       <div className="card w-full max-w-md">
         <div className="mb-4 text-center">
           <h2 className="text-xl font-bold">Welcome Back</h2>
