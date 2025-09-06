@@ -45,7 +45,7 @@ export default function Chatbot({ open, onClose, context }) {
 
       const data = await res.json()
 
-      setMsgs(m => [...m, { sender: 'bot', text: data.reply || "No response from server." }])
+      setMsgs(m => [...m, { sender: 'bot', text: data.response || "No response from server." }])
     } catch (err) {
       setMsgs(m => [...m, { sender: 'bot', text: `Error: ${err.message}` }])
     }
