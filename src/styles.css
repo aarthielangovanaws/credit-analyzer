@@ -64,6 +64,20 @@ body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSy
 .bubble.you{align-self:flex-end;background:linear-gradient(90deg,var(--accent),#7c9eff);color:white}
 .chat-input{display:flex;gap:8px;padding:12px;border-top:1px solid rgba(16,24,40,0.03)}
 .chat-input input{flex:1;padding:10px;border-radius:10px;border:1px solid rgba(16,24,40,0.04)}
+.input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  background: #fff;
+  color: #0f1724;
+  font-size: 14px;
+}
+.input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(91,124,255,0.2);
+}
 
 /* responsive */
 @media (max-width:900px){
