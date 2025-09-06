@@ -7,8 +7,11 @@ export default function Chatbot({ open, onClose, context }) {
   const [text, setText] = useState('')
   const listRef = useRef(null)
 
+  // 👇 Replace with your actual API Gateway endpoint
+  const API_URL = process.env.REACT_APP_CHAT_API_URL || "https://ksp4y6kvui.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/chat"
+
   useEffect(() => {
-    if(context?.page === 'statements' && open) {
+    if (context?.page === 'statements' && open) {
       // push contextual suggestions
       setTimeout(() => {
         setMsgs(m => [...m,
@@ -23,17 +26,28 @@ export default function Chatbot({ open, onClose, context }) {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' })
   }, [msgs, open])
 
-  function send() {
-    if(!text.trim()) return
+  async function send() {
+    if (!text.trim()) return
     const user = { sender: 'you', text: text.trim() }
     setMsgs(m => [...m, user])
+    const userInput = text.trim()
     setText('')
-    setTimeout(() => {
-      setMsgs(m => [...m, { sender: 'bot', text: smartReply(text) }])
-    }, 500)
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userInput })
+      })
+      const data = await res.json()
+
+      setMsgs(m => [...m, { sender: 'bot', text: data.reply || "No response from server." }])
+    } catch (err) {
+      setMsgs(m => [...m, { sender: 'bot', text: `Error: ${err.message}` }])
+    }
   }
 
-  if(!open) return null
+  if (!open) return null
 
   return (
     <div className="chat-popup" role="dialog" aria-modal="true">
@@ -42,22 +56,21 @@ export default function Chatbot({ open, onClose, context }) {
         <button className="btn ghost small" onClick={onClose}>✕</button>
       </div>
       <div className="chat-list" ref={listRef}>
-        {msgs.map((m,i) => (
-          <div key={i} className={m.sender === 'you' ? 'bubble you' : 'bubble bot'}>{m.text}</div>
+        {msgs.map((m, i) => (
+          <div key={i} className={m.sender === 'you' ? 'bubble you' : 'bubble bot'}>
+            {m.text}
+          </div>
         ))}
       </div>
       <div className="chat-input">
-        <input value={text} onChange={e=>setText(e.target.value)} placeholder="Type a message..." onKeyDown={e => e.key === 'Enter' ? send() : null} />
+        <input
+          value={text}
+          onChange={e => setText(e.target.value)}
+          placeholder="Type a message..."
+          onKeyDown={e => e.key === 'Enter' ? send() : null}
+        />
         <button className="btn primary" onClick={send}>Send</button>
       </div>
     </div>
   )
-}
-
-function smartReply(q) {
-  const s = (q||'').toLowerCase()
-  if(s.includes('offer')||s.includes('cashback')) return 'You can activate 5% cashback on groceries — would you like me to apply it to your card?'
-  if(s.includes('save')||s.includes('tips')) return 'Try setting an auto-transfer of 5% of your salary to savings and cap dining to ₹8,000.'
-  if(s.includes('reward')||s.includes('points')) return 'You have ₹75 in rewards. Redeem for statement credit or partner vouchers.'
-  return "Good question — I can help with statements, offers, or tips. Try asking about 'cashback' or 'savings'."
 }
