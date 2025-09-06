@@ -53,14 +53,13 @@ body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSy
   background: var(--bg);
   padding: 16px;
 }
-
+.gap-1{padding-bottom:15px;}
+.text-center{text-align:center;}
 .chart-placeholder{height:140px;background:linear-gradient(90deg,rgba(91,124,255,0.06),rgba(124,158,255,0.04));border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted)}
-
 .table{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;padding:10px;border-radius:8px;align-items:center}
 .row.head{color:var(--muted);font-weight:700;border-bottom:1px solid rgba(16,24,40,0.03)}
 .row:not(.head){background:linear-gradient(180deg,rgba(16,24,40,0.02),transparent);border:1px solid rgba(16,24,40,0.02)}
-
 .muted{color:var(--muted)}
 
 /* Chat popup */
