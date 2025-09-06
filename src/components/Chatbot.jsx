@@ -8,8 +8,8 @@ export default function Chatbot({ open, onClose, context }) {
   const listRef = useRef(null)
 
   // ✅ Read API URL & Key from environment variables
-  const API_URL = process.env.REACT_APP_CHAT_API_URL
-  const API_KEY = process.env.REACT_APP_API_KEY
+  const API_URL = 'https://ksp4y6kvui.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda'
+  const API_KEY = 'uZK1hEfQgl14nn9IU5GN88tT7QqdsbNt8IKDTVdn'
 
   useEffect(() => {
     if (context?.page === 'statements' && open) {
