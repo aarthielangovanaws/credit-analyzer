@@ -40,7 +40,7 @@ export default function Chatbot({ open, onClose, context }) {
           "Content-Type": "application/json",
           ...(API_KEY ? { "x-api-key": API_KEY } : {}) // Add API key if defined
         },
-        body: JSON.stringify({ message: userInput })
+        body: JSON.stringify({ query: userInput })
       })
 
       const data = await res.json()
