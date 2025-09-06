@@ -36,8 +36,6 @@ export default function Chatbot({ open, onClose, context }) {
     const userInput = text.trim()
     setText('')
 
-    const email = localStorage.getItem("userEmail");
-
     try {
       const res = await fetch(API_URL, {
         method: "POST",
