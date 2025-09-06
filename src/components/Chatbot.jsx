@@ -7,6 +7,9 @@ export default function Chatbot({ open, onClose, context }) {
   const [text, setText] = useState('')
   const listRef = useRef(null)
 
+  const storedUser = localStorage.getItem("user");
+  const email = storedUser ? JSON.parse(storedUser).email : null;
+
   // ✅ Read API URL & Key from environment variables
   const API_URL = 'https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/query'
   const API_KEY = 'uZK1hEfQgl14nn9IU5GN88tT7QqdsbNt8IKDTVdn'
@@ -33,6 +36,8 @@ export default function Chatbot({ open, onClose, context }) {
     const userInput = text.trim()
     setText('')
 
+    const email = localStorage.getItem("userEmail");
+
     try {
       const res = await fetch(API_URL, {
         method: "POST",
@@ -40,7 +45,7 @@ export default function Chatbot({ open, onClose, context }) {
           "Content-Type": "application/json",
           ...(API_KEY ? { "x-api-key": API_KEY } : {}) // Add API key if defined
         },
-        body: JSON.stringify({ query: userInput })
+        body: JSON.stringify({ email: email, query: userInput })
       })
 
       const data = await res.json()
