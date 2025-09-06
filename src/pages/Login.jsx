@@ -3,11 +3,44 @@ import React, { useState } from "react";
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (email && password) {
-      onLogin();
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await fetch("https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Network error");
+      }
+
+      const data = await res.json(); // expecting { success: true/false }
+
+      if (data.success) {
+        // Store what you already have locally
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ email }) // password not stored for security
+        );
+
+        onLogin({ email }); // pass to parent
+      } else {
+        setError("Invalid email or password");
+      }
+    } catch (err) {
+      setError("Login failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -46,9 +79,12 @@ export default function Login({ onLogin }) {
             />
           </div>
 
+          {/* Error */}
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
           {/* Submit */}
-          <button type="submit" className="btn primary w-full">
-            Sign In
+          <button type="submit" className="btn primary w-full" disabled={loading}>
+            {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
       </div>
