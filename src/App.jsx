@@ -8,7 +8,7 @@ import Profile from "./pages/Profile.jsx";
 import Settings from "./pages/Settings.jsx";
 import Support from "./pages/Support.jsx";
 import Chatbot from "./components/Chatbot.jsx";
-import Login from "./pages/Login.jsx"; // ✅ add login page
+import Login from "./pages/Login.jsx"; // ✅ login page
 
 export default function App() {
   const [active, setActive] = useState("dashboard");
@@ -26,21 +26,28 @@ export default function App() {
     }
   }
 
-  // ✅ When user is not logged in → show Login page only
+  // ✅ Show Login if not authenticated
   if (!loggedIn) {
     return <Login onLogin={() => setLoggedIn(true)} />;
   }
 
-  // ✅ After login → show app shell
+  // ✅ App Shell after login
   return (
     <div className="app-shell">
       <Sidebar active={active} onChange={openTab} onChat={() => setChatOpen(true)} />
       <main className="content">
-        <header className="topbar">
+        <header className="topbar flex items-center justify-between">
           <h1>Welcome back 👋</h1>
-          <div className="top-actions">
+          <div className="top-actions flex gap-2">
             <button className="btn ghost">Help</button>
             <button className="btn primary">New Upload</button>
+            {/* ✅ Logout Button */}
+            <button
+              className="btn danger"
+              onClick={() => setLoggedIn(false)}
+            >
+              Logout
+            </button>
           </div>
         </header>
 
