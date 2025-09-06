@@ -7,12 +7,12 @@ export default function Chatbot({ open, onClose, context }) {
   const [text, setText] = useState('')
   const listRef = useRef(null)
 
-  // 👇 Replace with your actual API Gateway endpoint
-  const API_URL = process.env.REACT_APP_CHAT_API_URL || "https://ksp4y6kvui.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/chat"
+  // ✅ Read API URL & Key from environment variables
+  const API_URL = process.env.REACT_APP_CHAT_API_URL
+  const API_KEY = process.env.REACT_APP_API_KEY
 
   useEffect(() => {
     if (context?.page === 'statements' && open) {
-      // push contextual suggestions
       setTimeout(() => {
         setMsgs(m => [...m,
           { sender: 'bot', text: `I noticed you opened Monthly Statements — you spent ₹41,250 this month.` },
@@ -36,9 +36,13 @@ export default function Chatbot({ open, onClose, context }) {
     try {
       const res = await fetch(API_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json", "x-api-key": process.env.REACT_APP_API_KEY },
+        headers: {
+          "Content-Type": "application/json",
+          ...(API_KEY ? { "x-api-key": API_KEY } : {}) // Add API key if defined
+        },
         body: JSON.stringify({ message: userInput })
       })
+
       const data = await res.json()
 
       setMsgs(m => [...m, { sender: 'bot', text: data.reply || "No response from server." }])
