@@ -1,7 +1,4 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
-import { Input } from "../components/ui/Input";
-import { Button } from "../components/ui/Button";
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
@@ -15,45 +12,46 @@ export default function Login({ onLogin }) {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Welcome Back</CardTitle>
-          <p className="text-center text-sm text-gray-500">
-            Sign in to your account
-          </p>
-        </CardHeader>
+    <div className="flex min-h-screen items-center justify-center bg-[var(--bg)] p-4">
+      <div className="card w-full max-w-md">
+        <div className="mb-4 text-center">
+          <h2 className="text-xl font-bold">Welcome Back</h2>
+          <p className="muted text-sm">Sign in to your account</p>
+        </div>
 
-        <CardContent>
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div>
-              <label className="block text-sm font-medium mb-1">Email</label>
-              <Input
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+          {/* Email */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium">Email</label>
+            <input
+              type="email"
+              className="input"
+              placeholder="you@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-1">Password</label>
-              <Input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+          {/* Password */}
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium">Password</label>
+            <input
+              type="password"
+              className="input"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
 
-            <Button type="submit" className="w-full">
-              Sign In
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+          {/* Submit */}
+          <button type="submit" className="btn primary w-full">
+            Sign In
+          </button>
+        </form>
+      </div>
     </div>
   );
 }
