@@ -87,7 +87,7 @@ export default function Statements() {
                     className="btn"
                     onClick={() => handleDownload(statement.statement_id, `${statement.month}_statement.pdf`)}
                   >
-                    Download
+                    Get Suggestions
                   </button>
                 </div>
               </div>
