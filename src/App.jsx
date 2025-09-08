@@ -11,7 +11,7 @@ import Chatbot from "./components/Chatbot.jsx";
 import Login from "./pages/Login.jsx"; // ✅ login page
 
 export default function App() {
-  const [active, setActive] = useState("dashboard");
+  const [active, setActive] = useState("statements");
   const [chatOpen, setChatOpen] = useState(false);
   const [context, setContext] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false); // ✅ auth state
@@ -52,13 +52,7 @@ export default function App() {
         </header>
 
         <div className="page-body">
-          {active === "dashboard" && <Dashboard />}
-          {active === "transactions" && <Transactions />}
           {active === "statements" && <Statements />}
-          {active === "rewards" && <Rewards />}
-          {active === "profile" && <Profile />}
-          {active === "settings" && <Settings />}
-          {active === "support" && <Support />}
         </div>
       </main>
 
