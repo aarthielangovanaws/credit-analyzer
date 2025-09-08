@@ -34,7 +34,7 @@ export default function Statements() {
     }
   };
 
-  const handleDownload = (statementId, month) => {
+  const handleDownload = = async (statementId, month) => {
      const response = await fetch('https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/statements/suggestions', {
         method: "POST",
         headers: {
