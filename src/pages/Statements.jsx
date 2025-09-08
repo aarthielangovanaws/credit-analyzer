@@ -84,11 +84,6 @@ export default function Statements() {
                 <div>{statement.type || 'Statement'}</div>
                 <div>₹{statement.total_spent?.toLocaleString('en-IN')}</div>
                 <div>
-                  <span className={`status ${statement.status || 'generated'}`}>
-                    {statement.status || 'Generated'}
-                  </span>
-                </div>
-                <div>
                   <button 
                     className="btn"
                     onClick={() => handleDownload(statement.statement_id, `${statement.month}_statement.pdf`)}
