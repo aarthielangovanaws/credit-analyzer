@@ -13,17 +13,6 @@ export default function Chatbot({ open, onClose, context }) {
   const API_KEY = 'uZK1hEfQgl14nn9IU5GN88tT7QqdsbNt8IKDTVdn'
 
   useEffect(() => {
-    if (context?.page === 'statements' && open) {
-      setTimeout(() => {
-        setMsgs(m => [...m,
-          { sender: 'bot', text: `I noticed you opened Monthly Statements — you spent ₹41,250 this month.` },
-          { sender: 'bot', text: 'You qualify for 5% cashback on groceries and a ₹500 welcome reward. Want to see offers?' }
-        ])
-      }, 300)
-    }
-  }, [context, open])
-
-  useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' })
   }, [msgs, open])
 
