@@ -39,8 +39,6 @@ export default function App() {
         <header className="topbar flex items-center justify-between">
           <h1>Welcome back 👋</h1>
           <div className="top-actions flex gap-2">
-            <button className="btn ghost">Help</button>
-            <button className="btn primary">New Upload</button>
             {/* ✅ Logout Button */}
             <button
               className="btn danger"
