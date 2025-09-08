@@ -1,13 +1,7 @@
 import React from 'react'
 
 const items = [
-  { id: 'dashboard', label: 'Dashboard', icon: '🏠' },
-  { id: 'transactions', label: 'Transactions', icon: '🧾' },
-  { id: 'statements', label: 'Statements', icon: '📄' },
-  { id: 'rewards', label: 'Rewards & Offers', icon: '🎁' },
-  { id: 'profile', label: 'Profile', icon: '👤' },
-  { id: 'settings', label: 'Settings', icon: '⚙️' },
-  { id: 'support', label: 'Support', icon: '❓' },
+  { id: 'statements', label: 'Statements', icon: '📄' }
 ]
 
 export default function Sidebar({ active, onChange, onChat }) {
