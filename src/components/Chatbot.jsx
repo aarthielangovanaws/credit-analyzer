@@ -6,9 +6,7 @@ export default function Chatbot({ open, onClose, context }) {
   ])
   const [text, setText] = useState('')
   const listRef = useRef(null)
-
-  const storedUser = localStorage.getItem("user");
-  const email = storedUser ? JSON.parse(storedUser).email : null;
+  const email = sessionStorage.getItem("userEmail");
 
   // ✅ Read API URL & Key from environment variables
   const API_URL = 'https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/query'
