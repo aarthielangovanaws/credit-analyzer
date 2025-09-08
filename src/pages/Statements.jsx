@@ -67,7 +67,7 @@ export default function Statements() {
     <div>
       <h2>Monthly Statements</h2>
       <div className="card">
-        <p className="muted">Statements are generated every month. You can download PDF or view details.</p>
+        <p className="muted">Statements are generated every month.</p>
         <div className="table">
           <div className="row head">
             <div>Month</div>
