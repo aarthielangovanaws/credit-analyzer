@@ -1,10 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function Login({ onLogin }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Check for existing session on component mount
+  useEffect(() => {
+    const storedEmail = sessionStorage.getItem("userEmail");
+    if (storedEmail) {
+      onLogin({ email: storedEmail });
+    }
+  }, [onLogin]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -24,16 +32,12 @@ export default function Login({ onLogin }) {
         throw new Error("Network error");
       }
 
-      const data = await res.json(); // expecting { success: true/false }
+      const data = await res.json();
 
       if (data.success) {
-        // Store what you already have locally
-        localStorage.setItem(
-          "user",
-          JSON.stringify({ email }) // password not stored for security
-        );
-
-        onLogin({ email }); // pass to parent
+        // Store email in sessionStorage
+        sessionStorage.setItem("userEmail", email);
+        onLogin({ email });
       } else {
         setError("Invalid email or password");
       }
