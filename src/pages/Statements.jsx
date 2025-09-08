@@ -73,7 +73,6 @@ export default function Statements() {
             <div>Month</div>
             <div>Type</div>
             <div>Amount</div>
-            <div>Status</div>
             <div></div>
           </div>
           
