@@ -34,11 +34,14 @@ export default function Statements() {
     }
   };
 
-  const handleDownload = (statementId, fileName) => {
-    // This would call another API endpoint to generate/download PDF
-    console.log('Downloading statement:', statementId);
-    // window.open(`https://your-api-id.execute-api.us-east-1.amazonaws.com/prod/statements/${statementId}/download`, '_blank');
-    alert(`Downloading ${fileName}`);
+  const handleDownload = (statementId, month) => {
+     const response = await fetch('https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/statements/suggestions', {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: sessionStorage.getItem("userEmail"), month }),
+      });
   };
 
   if (loading) {
@@ -82,14 +85,7 @@ export default function Statements() {
                 <div>{statement.month}</div>
                 <div>{statement.type || 'Statement'}</div>
                 <div>₹{statement.total_spent?.toLocaleString('en-IN')}</div>
-                <div>
-                  <button 
-                    className="btn"
-                    onClick={() => handleDownload(statement.statement_id, `${statement.month}_statement.pdf`)}
-                  >
-                    Get Suggestions
-                  </button>
-                </div>
+                <div onClick={() => handleDownload(statement.statement_id, statement.month)}> 💬 </div>
               </div>
             ))
           ) : (
