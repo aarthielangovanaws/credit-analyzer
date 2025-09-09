@@ -6,6 +6,7 @@ export default function Statements() {
   const [error, setError] = useState(null);
   const [suggestions, setSuggestions] = useState({});
   const [loadingSuggestions, setLoadingSuggestions] = useState({});
+  const [suggestionErrors, setSuggestionErrors] = useState({});
 
   useEffect(() => {
     fetchStatements();
@@ -13,7 +14,6 @@ export default function Statements() {
 
   const fetchStatements = async () => {
     try {
-      // Replace with your actual API Gateway endpoint
       const response = await fetch('https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/statements', {
         method: "POST",
         headers: {
@@ -37,13 +37,20 @@ export default function Statements() {
   };
 
   const handleDownload = async (statementId, month) => {
+    // Prevent clicking while loading
+    if (loadingSuggestions[statementId]) {
+      return;
+    }
+
     // If suggestions already exist for this statement, toggle visibility
     if (suggestions[statementId]) {
       setSuggestions(prev => ({ ...prev, [statementId]: null }));
+      setSuggestionErrors(prev => ({ ...prev, [statementId]: null }));
       return;
     }
 
     setLoadingSuggestions(prev => ({ ...prev, [statementId]: true }));
+    setSuggestionErrors(prev => ({ ...prev, [statementId]: null }));
 
     try {
       const response = await fetch('https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/statements/suggestions', {
@@ -58,15 +65,14 @@ export default function Statements() {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        throw new Error(`Failed to fetch suggestions: HTTP ${response.status}`);
       }
 
       const data = await response.json();
       setSuggestions(prev => ({ ...prev, [statementId]: data }));
     } catch (err) {
-      setError(err.message);
       console.error('Failed to fetch suggestions:', err);
-      setSuggestions(prev => ({ ...prev, [statementId]: 'Error loading suggestions' }));
+      setSuggestionErrors(prev => ({ ...prev, [statementId]: err.message }));
     } finally {
       setLoadingSuggestions(prev => ({ ...prev, [statementId]: false }));
     }
@@ -116,8 +122,12 @@ export default function Statements() {
                   <div>₹{statement.total_spent?.toLocaleString('en-IN')}</div>
                   <div 
                     onClick={() => handleDownload(statement.statement_id, statement.month)}
-                    style={{ cursor: 'pointer', color: '#007bff' }}
-                    title="Get suggestions"
+                    style={{ 
+                      cursor: loadingSuggestions[statement.statement_id] ? 'not-allowed' : 'pointer', 
+                      color: loadingSuggestions[statement.statement_id] ? '#6c757d' : '#007bff',
+                      opacity: loadingSuggestions[statement.statement_id] ? 0.6 : 1
+                    }}
+                    title={loadingSuggestions[statement.statement_id] ? 'Loading...' : 'Get suggestions'}
                   >
                     {loadingSuggestions[statement.statement_id] ? '⏳' : '💬'}
                   </div>
@@ -125,13 +135,29 @@ export default function Statements() {
                 
                 {/* Suggestions display area */}
                 {suggestions[statement.statement_id] && (
-                  <div className="suggestions-row">
+                  <div className="suggestions-row success">
                     <div className="suggestions-content">
                       <strong>Suggestions for {statement.month}:</strong>
                       <p>{typeof suggestions[statement.statement_id] === 'string' 
                           ? suggestions[statement.statement_id] 
                           : JSON.stringify(suggestions[statement.statement_id])}
                       </p>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Error display area */}
+                {suggestionErrors[statement.statement_id] && (
+                  <div className="suggestions-row error">
+                    <div className="suggestions-content">
+                      <strong>Error loading suggestions for {statement.month}:</strong>
+                      <p>{suggestionErrors[statement.statement_id]}</p>
+                      <button 
+                        onClick={() => handleDownload(statement.statement_id, statement.month)}
+                        className="retry-btn"
+                      >
+                        Retry
+                      </button>
                     </div>
                   </div>
                 )}
@@ -149,11 +175,20 @@ export default function Statements() {
 
       <style jsx>{`
         .suggestions-row {
-          background-color: #f8f9fa;
-          border-left: 4px solid #007bff;
           padding: 1rem;
           margin: 0.5rem 0;
           border-radius: 0 4px 4px 0;
+          border-left: 4px solid;
+        }
+        
+        .suggestions-row.success {
+          background-color: #f8f9fa;
+          border-color: #28a745;
+        }
+        
+        .suggestions-row.error {
+          background-color: #f8d7da;
+          border-color: #dc3545;
         }
         
         .suggestions-content {
@@ -168,9 +203,27 @@ export default function Statements() {
         }
         
         .suggestions-content p {
-          margin: 0;
+          margin: 0 0 0.5rem 0;
           color: #6c757d;
           white-space: pre-wrap;
+        }
+        
+        .retry-btn {
+          background-color: #dc3545;
+          color: white;
+          border: none;
+          padding: 0.25rem 0.75rem;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 0.8rem;
+        }
+        
+        .retry-btn:hover {
+          background-color: #c82333;
+        }
+        
+        .error {
+          color: #dc3545;
         }
       `}</style>
     </div>
