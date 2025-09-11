@@ -18,16 +18,12 @@ export default function Statements() {
         "https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/statements",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email: sessionStorage.getItem("userEmail") }),
         }
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
       const data = await response.json();
       setStatements(data);
@@ -56,9 +52,7 @@ export default function Statements() {
         "https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/statements/suggestions",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             email: sessionStorage.getItem("userEmail"),
             month,
@@ -66,9 +60,7 @@ export default function Statements() {
         }
       );
 
-      if (!response.ok) {
-        throw new Error(`Failed to fetch suggestions: HTTP ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`Failed to fetch suggestions: HTTP ${response.status}`);
 
       const data = await response.json();
       setSuggestions((prev) => ({ ...prev, [statementId]: data }));
@@ -108,7 +100,7 @@ export default function Statements() {
       <div className="card">
         <p className="muted">Statements are generated every month.</p>
 
-        {/* Scrollable area */}
+        {/* Scrollable data area */}
         <div className="table-container">
           <div className="table">
             <div className="row head">
@@ -124,29 +116,15 @@ export default function Statements() {
                   <div className="row">
                     <div>{statement.month}</div>
                     <div>{statement.type || "Statement"}</div>
-                    <div>
-                      ₹{statement.total_spent?.toLocaleString("en-IN")}
-                    </div>
+                    <div>₹{statement.total_spent?.toLocaleString("en-IN")}</div>
                     <div
-                      onClick={() =>
-                        handleDownload(statement.statement_id, statement.month)
-                      }
+                      onClick={() => handleDownload(statement.statement_id, statement.month)}
                       style={{
-                        cursor: loadingSuggestions[statement.statement_id]
-                          ? "not-allowed"
-                          : "pointer",
-                        color: loadingSuggestions[statement.statement_id]
-                          ? "#6c757d"
-                          : "#007bff",
-                        opacity: loadingSuggestions[statement.statement_id]
-                          ? 0.6
-                          : 1,
+                        cursor: loadingSuggestions[statement.statement_id] ? "not-allowed" : "pointer",
+                        color: loadingSuggestions[statement.statement_id] ? "#6c757d" : "#007bff",
+                        opacity: loadingSuggestions[statement.statement_id] ? 0.6 : 1,
                       }}
-                      title={
-                        loadingSuggestions[statement.statement_id]
-                          ? "Loading..."
-                          : "Get suggestions"
-                      }
+                      title={loadingSuggestions[statement.statement_id] ? "Loading..." : "Get suggestions"}
                     >
                       {loadingSuggestions[statement.statement_id] ? "⏳" : "💬"}
                     </div>
@@ -156,16 +134,11 @@ export default function Statements() {
                   {suggestions[statement.statement_id] && (
                     <div className="suggestions-row success">
                       <div className="suggestions-content">
-                        <strong>
-                          Suggestions for {statement.month}:
-                        </strong>
+                        <strong>Suggestions for {statement.month}:</strong>
                         <p>
-                          {typeof suggestions[statement.statement_id] ===
-                          "string"
+                          {typeof suggestions[statement.statement_id] === "string"
                             ? suggestions[statement.statement_id]
-                            : JSON.stringify(
-                                suggestions[statement.statement_id]
-                              )}
+                            : JSON.stringify(suggestions[statement.statement_id])}
                         </p>
                       </div>
                     </div>
@@ -175,17 +148,10 @@ export default function Statements() {
                   {suggestionErrors[statement.statement_id] && (
                     <div className="suggestions-row error">
                       <div className="suggestions-content">
-                        <strong>
-                          Error loading suggestions for {statement.month}:
-                        </strong>
+                        <strong>Error loading suggestions for {statement.month}:</strong>
                         <p>{suggestionErrors[statement.statement_id]}</p>
                         <button
-                          onClick={() =>
-                            handleDownload(
-                              statement.statement_id,
-                              statement.month
-                            )
-                          }
+                          onClick={() => handleDownload(statement.statement_id, statement.month)}
                           className="retry-btn"
                         >
                           Retry
@@ -197,10 +163,7 @@ export default function Statements() {
               ))
             ) : (
               <div className="row">
-                <div
-                  colSpan="5"
-                  style={{ textAlign: "center", padding: "1rem" }}
-                >
+                <div colSpan="5" style={{ textAlign: "center", padding: "1rem" }}>
                   No statements found.
                 </div>
               </div>
@@ -209,16 +172,68 @@ export default function Statements() {
         </div>
       </div>
 
+      {/* Inline CSS */}
       <style jsx>{`
         .table-container {
-          max-height: 400px; /* only this part scrolls */
+          max-height: 400px;
           overflow-y: auto;
           border: 1px solid #e0e0e0;
           border-radius: 6px;
         }
-
         .table {
           width: 100%;
         }
-
-        .row.head
+        .row.head {
+          position: sticky;
+          top: 0;
+          background: #f8f9fa;
+          font-weight: bold;
+          z-index: 1;
+        }
+        .suggestions-row {
+          padding: 1rem;
+          margin: 0.5rem 0;
+          border-radius: 0 4px 4px 0;
+          border-left: 4px solid;
+        }
+        .suggestions-row.success {
+          background-color: #f8f9fa;
+          border-color: #28a745;
+        }
+        .suggestions-row.error {
+          background-color: #f8d7da;
+          border-color: #dc3545;
+        }
+        .suggestions-content {
+          font-size: 0.9rem;
+          line-height: 1.4;
+        }
+        .suggestions-content strong {
+          color: #495057;
+          display: block;
+          margin-bottom: 0.5rem;
+        }
+        .suggestions-content p {
+          margin: 0 0 0.5rem 0;
+          color: #6c757d;
+          white-space: pre-wrap;
+        }
+        .retry-btn {
+          background-color: #dc3545;
+          color: white;
+          border: none;
+          padding: 0.25rem 0.75rem;
+          border-radius: 4px;
+          cursor: pointer;
+          font-size: 0.8rem;
+        }
+        .retry-btn:hover {
+          background-color: #c82333;
+        }
+        .error {
+          color: #dc3545;
+        }
+      `}</style>
+    </div>
+  );
+}
