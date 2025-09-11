@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   content: [
-    "./src/**/*.{js,jsx,ts,tsx}",  // 👈 important
+    "./src/**/*.{js,jsx,ts,tsx}",  // scan your source files
   ],
   theme: {
     extend: {},
