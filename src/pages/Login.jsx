@@ -6,7 +6,7 @@ export default function Login({ onLogin }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Check for existing session on component mount
+  // Check for existing session
   useEffect(() => {
     const storedEmail = sessionStorage.getItem("userEmail");
     if (storedEmail) {
@@ -20,22 +20,22 @@ export default function Login({ onLogin }) {
     setLoading(true);
 
     try {
-      const res = await fetch("https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const res = await fetch(
+        "https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
 
-      if (!res.ok) {
-        throw new Error("Network error");
-      }
+      if (!res.ok) throw new Error("Network error");
 
       const data = await res.json();
 
       if (data.success) {
-        // Store email in sessionStorage
         sessionStorage.setItem("userEmail", email);
         onLogin({ email });
       } else {
@@ -49,20 +49,24 @@ export default function Login({ onLogin }) {
   }
 
   return (
-    <div className="login-wrapper">
-      <div className="card w-full max-w-md">
-        <div className="mb-4 text-center">
-          <h2 className="text-xl font-bold">Welcome Back</h2>
-          <p className="muted text-sm">Sign in to your account</p>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-6">
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+        {/* Header */}
+        <div className="mb-6 text-center">
+          <h2 className="text-2xl font-bold text-gray-800">Welcome Back</h2>
+          <p className="text-gray-500 text-sm">Sign in to your account</p>
         </div>
 
-        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+        {/* Form */}
+        <form className="space-y-5" onSubmit={handleSubmit}>
           {/* Email */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium">Email</label>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
             <input
               type="email"
-              className="input"
+              className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 placeholder-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -71,11 +75,13 @@ export default function Login({ onLogin }) {
           </div>
 
           {/* Password */}
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium">Password</label>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
             <input
               type="password"
-              className="input"
+              className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 placeholder-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -84,13 +90,29 @@ export default function Login({ onLogin }) {
           </div>
 
           {/* Error */}
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && (
+            <p className="text-red-500 text-sm text-center">{error}</p>
+          )}
 
           {/* Submit */}
-          <button type="submit" className="btn primary w-full" disabled={loading}>
+          <button
+            type="submit"
+            className="w-full py-2.5 rounded-lg bg-indigo-600 text-white font-semibold shadow-md hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition disabled:opacity-70 disabled:cursor-not-allowed"
+            disabled={loading}
+          >
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
+
+        {/* Footer */}
+        <div className="mt-6 text-center">
+          <p className="text-sm text-gray-500">
+            Don’t have an account?{" "}
+            <a href="#" className="text-indigo-600 hover:underline">
+              Sign up
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );
