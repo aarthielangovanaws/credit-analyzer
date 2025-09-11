@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
 export default function Statements() {
   const [statements, setStatements] = useState([]);
@@ -18,12 +18,17 @@ export default function Statements() {
         "https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/statements",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ email: sessionStorage.getItem("userEmail") }),
         }
       );
 
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
       setStatements(data);
     } catch (err) {
@@ -51,7 +56,9 @@ export default function Statements() {
         "https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/statements/suggestions",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             email: sessionStorage.getItem("userEmail"),
             month,
@@ -75,10 +82,10 @@ export default function Statements() {
 
   if (loading) {
     return (
-      <div className="p-6">
-        <h2 className="text-xl font-bold mb-4">Monthly Statements</h2>
-        <div className="bg-white rounded-xl shadow p-6 text-gray-500">
-          Loading your statements...
+      <div>
+        <h2>Monthly Statements</h2>
+        <div className="card">
+          <p>Loading your statements...</p>
         </div>
       </div>
     );
@@ -86,89 +93,132 @@ export default function Statements() {
 
   if (error) {
     return (
-      <div className="p-6">
-        <h2 className="text-xl font-bold mb-4">Monthly Statements</h2>
-        <div className="bg-red-100 text-red-700 rounded-xl shadow p-6">
-          Error loading statements: {error}
+      <div>
+        <h2>Monthly Statements</h2>
+        <div className="card">
+          <p className="error">Error loading statements: {error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="p-6">
-      <h2 className="text-xl font-bold mb-4">Monthly Statements</h2>
-      <div className="bg-white rounded-xl shadow p-6">
-        <p className="text-sm text-gray-500 mb-4">
-          Statements are generated every month.
-        </p>
+    <div>
+      <h2>Monthly Statements</h2>
+      <div className="card">
+        <p className="muted">Statements are generated every month.</p>
 
-        <div className="divide-y divide-gray-200">
-          <div className="grid grid-cols-4 font-medium text-gray-600 pb-2">
-            <div>Month</div>
-            <div>Type</div>
-            <div>Amount</div>
-            <div>Actions</div>
-          </div>
-
-          {statements.length > 0 ? (
-            statements.map((s) => (
-              <div key={s.statement_id} className="py-3">
-                <div className="grid grid-cols-4 items-center">
-                  <div>{s.month}</div>
-                  <div>{s.type || "Statement"}</div>
-                  <div>₹{s.total_spent?.toLocaleString("en-IN")}</div>
-                  <button
-                    onClick={() => handleDownload(s.statement_id, s.month)}
-                    disabled={loadingSuggestions[s.statement_id]}
-                    className={`text-sm font-medium ${
-                      loadingSuggestions[s.statement_id]
-                        ? "text-gray-400 cursor-not-allowed"
-                        : "text-indigo-600 hover:underline"
-                    }`}
-                  >
-                    {loadingSuggestions[s.statement_id] ? "⏳ Loading..." : "💬 Get Suggestions"}
-                  </button>
-                </div>
-
-                {suggestions[s.statement_id] && (
-                  <div className="mt-2 bg-green-50 border-l-4 border-green-500 p-3 rounded">
-                    <strong className="block text-green-700 mb-1">
-                      Suggestions for {s.month}:
-                    </strong>
-                    <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                      {typeof suggestions[s.statement_id] === "string"
-                        ? suggestions[s.statement_id]
-                        : JSON.stringify(suggestions[s.statement_id], null, 2)}
-                    </p>
-                  </div>
-                )}
-
-                {suggestionErrors[s.statement_id] && (
-                  <div className="mt-2 bg-red-50 border-l-4 border-red-500 p-3 rounded">
-                    <strong className="block text-red-700 mb-1">
-                      Error loading suggestions for {s.month}:
-                    </strong>
-                    <p className="text-sm text-gray-700 mb-2">
-                      {suggestionErrors[s.statement_id]}
-                    </p>
-                    <button
-                      onClick={() => handleDownload(s.statement_id, s.month)}
-                      className="bg-red-600 text-white px-3 py-1 text-sm rounded hover:bg-red-700"
-                    >
-                      Retry
-                    </button>
-                  </div>
-                )}
-              </div>
-            ))
-          ) : (
-            <div className="text-center py-6 text-gray-500">
-              No statements found.
+        {/* Scrollable area */}
+        <div className="table-container">
+          <div className="table">
+            <div className="row head">
+              <div>Month</div>
+              <div>Type</div>
+              <div>Amount</div>
+              <div>Actions</div>
             </div>
-          )}
+
+            {statements.length > 0 ? (
+              statements.map((statement) => (
+                <div key={statement.statement_id}>
+                  <div className="row">
+                    <div>{statement.month}</div>
+                    <div>{statement.type || "Statement"}</div>
+                    <div>
+                      ₹{statement.total_spent?.toLocaleString("en-IN")}
+                    </div>
+                    <div
+                      onClick={() =>
+                        handleDownload(statement.statement_id, statement.month)
+                      }
+                      style={{
+                        cursor: loadingSuggestions[statement.statement_id]
+                          ? "not-allowed"
+                          : "pointer",
+                        color: loadingSuggestions[statement.statement_id]
+                          ? "#6c757d"
+                          : "#007bff",
+                        opacity: loadingSuggestions[statement.statement_id]
+                          ? 0.6
+                          : 1,
+                      }}
+                      title={
+                        loadingSuggestions[statement.statement_id]
+                          ? "Loading..."
+                          : "Get suggestions"
+                      }
+                    >
+                      {loadingSuggestions[statement.statement_id] ? "⏳" : "💬"}
+                    </div>
+                  </div>
+
+                  {/* Suggestions */}
+                  {suggestions[statement.statement_id] && (
+                    <div className="suggestions-row success">
+                      <div className="suggestions-content">
+                        <strong>
+                          Suggestions for {statement.month}:
+                        </strong>
+                        <p>
+                          {typeof suggestions[statement.statement_id] ===
+                          "string"
+                            ? suggestions[statement.statement_id]
+                            : JSON.stringify(
+                                suggestions[statement.statement_id]
+                              )}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Errors */}
+                  {suggestionErrors[statement.statement_id] && (
+                    <div className="suggestions-row error">
+                      <div className="suggestions-content">
+                        <strong>
+                          Error loading suggestions for {statement.month}:
+                        </strong>
+                        <p>{suggestionErrors[statement.statement_id]}</p>
+                        <button
+                          onClick={() =>
+                            handleDownload(
+                              statement.statement_id,
+                              statement.month
+                            )
+                          }
+                          className="retry-btn"
+                        >
+                          Retry
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))
+            ) : (
+              <div className="row">
+                <div
+                  colSpan="5"
+                  style={{ textAlign: "center", padding: "1rem" }}
+                >
+                  No statements found.
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
+
+      <style jsx>{`
+        .table-container {
+          max-height: 400px; /* only this part scrolls */
+          overflow-y: auto;
+          border: 1px solid #e0e0e0;
+          border-radius: 6px;
+        }
+
+        .table {
+          width: 100%;
+        }
+
+        .row.head
