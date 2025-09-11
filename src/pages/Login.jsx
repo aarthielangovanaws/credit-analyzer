@@ -103,16 +103,6 @@ export default function Login({ onLogin }) {
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
-
-        {/* Footer */}
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-500">
-            Don’t have an account?{" "}
-            <a href="#" className="text-indigo-600 hover:underline">
-              Sign up
-            </a>
-          </p>
-        </div>
       </div>
     </div>
   );
