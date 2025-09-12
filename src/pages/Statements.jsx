@@ -175,7 +175,7 @@ export default function Statements() {
       {/* Inline CSS */}
       <style jsx>{`
         .table-container {
-          max-height: 400px;
+          max-height: calc(100vh - 188px);
           overflow-y: auto;
           border: 1px solid #e0e0e0;
           border-radius: 6px;
