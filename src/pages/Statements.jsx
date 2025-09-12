@@ -107,7 +107,6 @@ export default function Statements() {
               <div>Month</div>
               <div>Type</div>
               <div>Amount</div>
-              <div>Actions</div>
             </div>
 
             {statements.length > 0 ? (
