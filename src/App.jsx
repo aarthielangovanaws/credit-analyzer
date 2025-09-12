@@ -66,7 +66,13 @@ export default function App() {
         </header>
 
         <div className="page-body">
+          {active === "dashboard" && <Dashboard />}
+          {active === "transactions" && <Transactions />}
           {active === "statements" && <Statements />}
+          {active === "rewards" && <Rewards />}
+          {active === "profile" && <Profile />}
+          {active === "settings" && <Settings />}
+          {active === "support" && <Support />}
         </div>
       </main>
 
