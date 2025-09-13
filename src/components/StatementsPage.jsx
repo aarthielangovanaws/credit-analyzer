@@ -72,15 +72,27 @@ export default function StatementsPage() {
     }
   };
 
+  // Function to format date from "2025-08-10" to "September 2025"
+  const formatMonthYear = (dateString) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return dateString; // Return original if formatting fails
+    }
+  };
+
   if (loading) {
     return (
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">Monthly Statements</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3, 4, 5, 6].map((item) => (
-            <div key={item} className="p-4 rounded-lg shadow-md bg-white">
-              <div className="h-6 bg-gray-200 rounded w-3/4 mb-2 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+        <h1 className="text-2xl font-bold mb-6">Monthly Statements</h1>
+        <div className="space-y-4">
+          {[1, 2, 3, 4].map((item) => (
+            <div key={item} className="p-6 rounded-lg shadow-md bg-white">
+              <div className="h-6 bg-gray-200 rounded w-3/4 mb-4 animate-pulse"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2 mb-2 animate-pulse"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse"></div>
             </div>
           ))}
         </div>
@@ -91,7 +103,7 @@ export default function StatementsPage() {
   if (error) {
     return (
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-4">Monthly Statements</h1>
+        <h1 className="text-2xl font-bold mb-6">Monthly Statements</h1>
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
           <strong className="font-bold">Error: </strong>
           <span className="block sm:inline">{error}</span>
@@ -102,48 +114,58 @@ export default function StatementsPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Monthly Statements</h1>
+      <h1 className="text-2xl font-bold mb-6">Monthly Statements</h1>
       
       {statements.length === 0 ? (
         <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded">
           No statements found.
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="space-y-6">
           {statements.map((statement) => (
             <div
               key={statement.statement_id}
-              className="p-4 rounded-lg shadow-md bg-white hover:bg-blue-50 transition cursor-pointer relative"
+              className="p-6 rounded-lg shadow-md bg-white hover:shadow-lg transition-all duration-200"
             >
-              <div className="font-semibold text-lg">{statement.month}</div>
-              <div className="text-sm text-gray-600 mb-2">
-                {statement.type || "Statement"} • ₹{statement.total_spent?.toLocaleString("en-IN")}
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <div className="font-semibold text-xl text-gray-800">
+                    {formatMonthYear(statement.month)}
+                  </div>
+                  <div className="text-sm text-gray-600 mt-1">
+                    {statement.type || "Credit Card Statement"} • ₹{statement.total_spent?.toLocaleString("en-IN")}
+                  </div>
+                </div>
+                
+                <button
+                  onClick={() => handleGetSuggestions(statement.statement_id, statement.month)}
+                  disabled={loadingSuggestions[statement.statement_id]}
+                  className={`px-4 py-2 rounded-md text-sm font-medium ${
+                    loadingSuggestions[statement.statement_id] 
+                      ? "bg-gray-200 text-gray-500 cursor-not-allowed" 
+                      : suggestions[statement.statement_id] 
+                        ? "bg-blue-100 text-blue-700 hover:bg-blue-200" 
+                        : "bg-blue-600 text-white hover:bg-blue-700"
+                  }`}
+                >
+                  {loadingSuggestions[statement.statement_id] 
+                    ? "Loading..." 
+                    : suggestions[statement.statement_id] 
+                      ? "Hide Suggestions" 
+                      : "Get Suggestions"}
+                </button>
               </div>
-              
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleGetSuggestions(statement.statement_id, statement.month);
-                }}
-                disabled={loadingSuggestions[statement.statement_id]}
-                className={`text-sm ${
-                  loadingSuggestions[statement.statement_id] 
-                    ? "text-gray-400 cursor-not-allowed" 
-                    : "text-blue-600 hover:text-blue-800"
-                }`}
-              >
-                {loadingSuggestions[statement.statement_id] 
-                  ? "Loading..." 
-                  : suggestions[statement.statement_id] 
-                    ? "Hide Suggestions" 
-                    : "Get Suggestions"}
-              </button>
               
               {/* Suggestions */}
               {suggestions[statement.statement_id] && (
-                <div className="mt-3 p-3 bg-gray-50 rounded border border-gray-200">
-                  <strong className="block text-sm mb-1">Suggestions:</strong>
-                  <p className="text-xs text-gray-600">
+                <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <div className="flex items-center mb-2">
+                    <svg className="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <strong className="text-blue-800">Financial Suggestions</strong>
+                  </div>
+                  <p className="text-blue-700">
                     {typeof suggestions[statement.statement_id] === "string"
                       ? suggestions[statement.statement_id]
                       : JSON.stringify(suggestions[statement.statement_id])}
@@ -153,17 +175,19 @@ export default function StatementsPage() {
               
               {/* Errors */}
               {suggestionErrors[statement.statement_id] && (
-                <div className="mt-3 p-3 bg-red-100 rounded border border-red-200">
-                  <strong className="block text-sm mb-1 text-red-700">Error:</strong>
-                  <p className="text-xs text-red-600">{suggestionErrors[statement.statement_id]}</p>
+                <div className="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
+                  <div className="flex items-center mb-2">
+                    <svg className="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <strong className="text-red-800">Error Loading Suggestions</strong>
+                  </div>
+                  <p className="text-red-700 mb-3">{suggestionErrors[statement.statement_id]}</p>
                   <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleGetSuggestions(statement.statement_id, statement.month);
-                    }}
-                    className="mt-1 text-xs bg-red-600 text-white px-2 py-1 rounded hover:bg-red-700"
+                    onClick={() => handleGetSuggestions(statement.statement_id, statement.month)}
+                    className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
                   >
-                    Retry
+                    Try Again
                   </button>
                 </div>
               )}
