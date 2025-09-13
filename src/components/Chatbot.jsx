@@ -42,11 +42,12 @@ export default function Chatbot({ context, payload }) {
     const userMsg = { from: "user", text: input.trim() };
     setMessages(prev => [...prev, userMsg]);
     setInput("");
+    
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch('https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/query', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMsg.text })
+        body: JSON.stringify({ query: userMsg.text, email: sessionStorage.getItem("userEmail") })
       });
       const data = await res.json();
       setMessages(prev => [...prev, { from: "assistant", text: data.message || 'No response from server' }]);
