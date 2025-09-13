@@ -87,12 +87,12 @@ export default function StatementsPage() {
     return (
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-6">Monthly Statements</h1>
-        <div className="space-y-4">
-          {[1, 2, 3, 4].map((item) => (
-            <div key={item} className="p-6 rounded-lg shadow-md bg-white">
-              <div className="h-6 bg-gray-200 rounded w-3/4 mb-4 animate-pulse"></div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
+            <div key={item} className="p-4 rounded-lg shadow-sm bg-white h-32">
+              <div className="h-5 bg-gray-200 rounded w-3/4 mb-3 animate-pulse"></div>
               <div className="h-4 bg-gray-200 rounded w-1/2 mb-2 animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/3 animate-pulse"></div>
+              <div className="h-4 bg-gray-200 rounded w-2/3 animate-pulse"></div>
             </div>
           ))}
         </div>
@@ -121,74 +121,88 @@ export default function StatementsPage() {
           No statements found.
         </div>
       ) : (
-        <div className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {statements.map((statement) => (
             <div
               key={statement.statement_id}
-              className="p-6 rounded-lg shadow-md bg-white hover:shadow-lg transition-all duration-200"
+              className="p-4 rounded-lg shadow-sm bg-white hover:shadow-md transition-all duration-200 h-32 flex flex-col justify-between"
             >
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <div className="font-semibold text-xl text-gray-800">
-                    {formatMonthYear(statement.month)}
-                  </div>
-                  <div className="text-sm text-gray-600 mt-1">
-                    {statement.type || "Credit Card Statement"} • ₹{statement.total_spent?.toLocaleString("en-IN")}
-                  </div>
+              <div>
+                <div className="font-semibold text-gray-800 text-sm mb-1">
+                  {formatMonthYear(statement.month)}
                 </div>
-                
+                <div className="text-xs text-gray-600">
+                  ₹{statement.total_spent?.toLocaleString("en-IN")}
+                </div>
+              </div>
+              
+              <div className="flex justify-end mt-2">
                 <button
                   onClick={() => handleGetSuggestions(statement.statement_id, statement.month)}
                   disabled={loadingSuggestions[statement.statement_id]}
-                  className={`px-4 py-2 rounded-md text-sm font-medium ${
+                  className={`text-xs px-2 py-1 rounded ${
                     loadingSuggestions[statement.statement_id] 
                       ? "bg-gray-200 text-gray-500 cursor-not-allowed" 
                       : suggestions[statement.statement_id] 
-                        ? "bg-blue-100 text-blue-700 hover:bg-blue-200" 
-                        : "bg-blue-600 text-white hover:bg-blue-700"
+                        ? "bg-blue-100 text-blue-700" 
+                        : "bg-blue-100 text-blue-600 hover:bg-blue-200"
                   }`}
                 >
                   {loadingSuggestions[statement.statement_id] 
-                    ? "Loading..." 
+                    ? "..." 
                     : suggestions[statement.statement_id] 
-                      ? "Hide Suggestions" 
-                      : "Get Suggestions"}
+                      ? "Hide" 
+                      : "Suggest"}
                 </button>
               </div>
               
-              {/* Suggestions */}
+              {/* Suggestions Modal */}
               {suggestions[statement.statement_id] && (
-                <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <div className="flex items-center mb-2">
-                    <svg className="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <strong className="text-blue-800">Financial Suggestions</strong>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="font-semibold text-gray-800">
+                        Suggestions for {formatMonthYear(statement.month)}
+                      </h3>
+                      <button 
+                        onClick={() => setSuggestions((prev) => ({ ...prev, [statement.statement_id]: null }))}
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      {typeof suggestions[statement.statement_id] === "string"
+                        ? suggestions[statement.statement_id]
+                        : JSON.stringify(suggestions[statement.statement_id])}
+                    </div>
                   </div>
-                  <p className="text-blue-700">
-                    {typeof suggestions[statement.statement_id] === "string"
-                      ? suggestions[statement.statement_id]
-                      : JSON.stringify(suggestions[statement.statement_id])}
-                  </p>
                 </div>
               )}
               
-              {/* Errors */}
+              {/* Errors Modal */}
               {suggestionErrors[statement.statement_id] && (
-                <div className="mt-4 p-4 bg-red-50 rounded-lg border border-red-200">
-                  <div className="flex items-center mb-2">
-                    <svg className="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <strong className="text-red-800">Error Loading Suggestions</strong>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                  <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="font-semibold text-red-600">Error</h3>
+                      <button 
+                        onClick={() => setSuggestionErrors((prev) => ({ ...prev, [statement.statement_id]: null }))}
+                        className="text-gray-500 hover:text-gray-700"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div className="text-sm text-red-600 mb-4">
+                      {suggestionErrors[statement.statement_id]}
+                    </div>
+                    <button
+                      onClick={() => handleGetSuggestions(statement.statement_id, statement.month)}
+                      className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700"
+                    >
+                      Try Again
+                    </button>
                   </div>
-                  <p className="text-red-700 mb-3">{suggestionErrors[statement.statement_id]}</p>
-                  <button
-                    onClick={() => handleGetSuggestions(statement.statement_id, statement.month)}
-                    className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition-colors"
-                  >
-                    Try Again
-                  </button>
                 </div>
               )}
             </div>
