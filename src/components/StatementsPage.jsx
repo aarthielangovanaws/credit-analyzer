@@ -87,27 +87,20 @@ export default function StatementsPage() {
         No statements found.
       </div>
     ) : (
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {statements.map((statement) => (
           <div
             key={statement.statement_id}
-            className="flex flex-col justify-between p-4 rounded bg-white shadow-sm hover:shadow-md transition-shadow h-32"
+            className="p-4 rounded-lg shadow-md bg-white hover:bg-blue-50 cursor-pointer transition"
           >
             <div>
-              <div className="font-medium text-gray-800">
+              <div className="font-semibold text-lg">
                 {formatMonthYear(statement.month)}
               </div>
               <div className="text-sm text-gray-600">
                 Amount: ₹{statement.total_spent?.toLocaleString("en-IN")}
               </div>
             </div>
-
-            <button
-              onClick={() => handleGetSuggestions(statement.month)}
-              className="mt-2 px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded hover:bg-blue-200 transition-colors self-start"
-            >
-              Get Suggestions
-            </button>
           </div>
         ))}
       </div>
