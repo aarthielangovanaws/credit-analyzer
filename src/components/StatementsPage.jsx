@@ -79,39 +79,39 @@ export default function StatementsPage() {
   }
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Monthly Statements</h1>
-      
-      {statements.length === 0 ? (
-        <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded">
-          No statements found.
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {statements.map((statement) => (
-            <div
-              key={statement.statement_id}
-              className="flex items-center justify-between p-3 rounded bg-white shadow-sm hover:shadow-md transition-shadow h-16"
-            >
-              <div>
-                <div className="font-medium text-gray-800">
-                  {formatMonthYear(statement.month)}
-                </div>
-                <div className="text-sm text-gray-600">
-                  Amount: ₹{statement.total_spent?.toLocaleString("en-IN")}
-                </div>
+  <div className="p-6">
+    <h1 className="text-2xl font-bold mb-6">Monthly Statements</h1>
+
+    {statements.length === 0 ? (
+      <div className="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded">
+        No statements found.
+      </div>
+    ) : (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {statements.map((statement) => (
+          <div
+            key={statement.statement_id}
+            className="flex flex-col justify-between p-4 rounded bg-white shadow-sm hover:shadow-md transition-shadow h-32"
+          >
+            <div>
+              <div className="font-medium text-gray-800">
+                {formatMonthYear(statement.month)}
               </div>
-              
-              <button
-                onClick={() => handleGetSuggestions(statement.month)}
-                className="px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded hover:bg-blue-200 transition-colors"
-              >
-                Get Suggestions
-              </button>
+              <div className="text-sm text-gray-600">
+                Amount: ₹{statement.total_spent?.toLocaleString("en-IN")}
+              </div>
             </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+
+            <button
+              onClick={() => handleGetSuggestions(statement.month)}
+              className="mt-2 px-3 py-1 bg-blue-100 text-blue-600 text-sm rounded hover:bg-blue-200 transition-colors self-start"
+            >
+              Get Suggestions
+            </button>
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
+);
 }
