@@ -1,0 +1,52 @@
+
+import React, { useState, useEffect } from 'react';
+
+export default function Chatbot() {
+  const [messages, setMessages] = useState([]);
+
+  useEffect(() => {
+    window.openChatbot = () => {
+      const el = document.getElementById('chatbot-container');
+      if(el){
+        el.style.display = 'block';
+        setTimeout(()=>{el.style.transform='translateX(0)';},10);
+      }
+    };
+    window.closeChatbot = () => {
+      const el = document.getElementById('chatbot-container');
+      if(el){
+        el.style.transform='translateX(100%)';
+        setTimeout(()=>{el.style.display='none';},300);
+      }
+    };
+    window.triggerChatbot = async (context, payload) => {
+      window.openChatbot();
+      let msg = "";
+      if(context === "dashboard") msg = "Here’s a summary of your finances this month...";
+      else if(context === "profile") msg = "Would you like to update your personal details or preferences?";
+      else if(context === "support") msg = "How can I help you today?";
+      else if(context === "chat") msg = "Hi 👋 I’m your credit assistant. What would you like help with today?";
+      else if(context === "statements") msg = "Here are your monthly statements. Select a month to get insights.";
+      else if(context === "statement-month" && payload?.month) {
+        try {
+          const res = await fetch(`/api/statements/analyze/${payload.month}`);
+          const data = await res.json();
+          msg = data.message || "Here are your insights for " + payload.month;
+        } catch(e) {
+          msg = "Sorry, I couldn't fetch insights for " + payload.month;
+        }
+      }
+      setMessages(prev => [...prev, { from: "assistant", text: msg }]);
+    };
+  }, []);
+
+  return (
+    <div id='chatbot-container' style={{display:'none', position:'fixed', right:0, top:0, height:'100%', width:'400px', backgroundColor:'white', boxShadow:'-2px 0 5px rgba(0,0,0,0.1)', transition:'transform 0.3s ease-in-out', transform:'translateX(100%)', padding:'12px', overflowY:'auto'}}>
+      <button onClick={()=>window.closeChatbot()} style={{position:'absolute',top:10,left:10}}>X</button>
+      <h2>Chat Assistant</h2>
+      <div>
+        {messages.map((m,i)=>(<div key={i} style={{margin:'8px 0'}}><b>{m.from}:</b> {m.text}</div>))}
+      </div>
+    </div>
+  );
+}

@@ -1,35 +1,32 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 
-export default function Chatbot({ context, payload }) {
+export default function Chatbot() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
 
-  // When context or payload changes, push appropriate assistant message
   useEffect(() => {
-    if(!context) return;
-    let msg = "";
-    if(context === "dashboard") msg = "Here’s a summary of your finances this month...";
-    else if(context === "profile") msg = "Would you like to update your personal details or preferences?";
-    else if(context === "support") msg = "How can I help you today?";
-    else if(context === "chat") msg = "Hi 👋 I’m your credit assistant. What would you like help with today?";
-    else if(context === "statements") msg = "Here are your monthly statements. Select a month to get insights.";
-    else if(context === "statement-month" && payload?.month) {
-      (async () => {
+    window.triggerChatbot = async (context, payload) => {
+      window.openChatbot && window.openChatbot();
+      let msg = "";
+      if(context === "dashboard") msg = "Here’s a summary of your finances this month...";
+      else if(context === "profile") msg = "Would you like to update your personal details or preferences?";
+      else if(context === "support") msg = "How can I help you today?";
+      else if(context === "chat") msg = "Hi 👋 I’m your credit assistant. What would you like help with today?";
+      else if(context === "statements") msg = "Here are your monthly statements. Select a month to get insights.";
+      else if(context === "statement-month" && payload?.month) {
         try {
           const res = await fetch(`/api/statements/analyze/${encodeURIComponent(payload.month)}`);
           const data = await res.json();
-          const m = data.message || "Here are your insights for " + payload.month;
-          setMessages(prev => [...prev, { from: "assistant", text: m }]);
+          msg = data.message || "Here are your insights for " + payload.month;
         } catch(e) {
-          setMessages(prev => [...prev, { from: "assistant", text: "Sorry, I couldn't fetch insights for " + payload.month }]);
+          msg = "Sorry, I couldn't fetch insights for " + payload.month;
         }
-      })();
-      return;
-    }
-    if(msg) setMessages(prev => [...prev, { from: "assistant", text: msg }]);
-  }, [context, payload]);
+      }
+      setMessages(prev => [...prev, { from: "assistant", text: msg }]);
+    };
+  }, []);
 
   useEffect(() => {
     if(messagesEndRef.current){
@@ -67,7 +64,7 @@ export default function Chatbot({ context, payload }) {
       <div className="flex-1 overflow-y-auto p-3 bg-gray-50">
         {messages.map((m,i)=>(
           <div key={i} className={`my-2 flex ${m.from==="user"?"justify-end":"justify-start"}`}>
-            <div className={`px-3 py-2 rounded-lg max-w-[80%] font-semibold ${m.from==="user"?"bg-blue-600 text-white":"bg-gray-200 text-black"}`}>
+            <div className={`px-3 py-2 rounded-lg max-w-[80%] ${m.from==="user"?"bg-blue-600 text-white":"bg-gray-200 text-black"}`}>
               {m.text}
             </div>
           </div>

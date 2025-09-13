@@ -6,26 +6,23 @@ import Chatbot from "./components/Chatbot";
 
 export default function App() {
   const [chatbotOpen, setChatbotOpen] = useState(false);
-  const [chatbotContext, setChatbotContext] = useState(null);
 
   useEffect(() => {
-    window.triggerChatbot = (context, payload) => {
-      setChatbotOpen(true);
-      setChatbotContext({ context, payload });
-    };
+    window.openChatbot = () => setChatbotOpen(true);
     window.closeChatbot = () => setChatbotOpen(false);
-  }, []);
+    window.isChatbotOpen = () => chatbotOpen;
+  }, [chatbotOpen]);
 
   return (
     <div className="flex h-screen w-screen bg-gray-100">
       <Sidebar />
       <main className="flex flex-1 overflow-hidden">
-        <div className="flex-1 overflow-y-auto transition-all duration-300 bg-gradient-to-br from-blue-50 via-purple-50 to-purple-100">
+        <div className="flex-1 overflow-y-auto transition-all duration-300">
           <StatementsPage />
         </div>
         {chatbotOpen && (
-          <div className="w-[550px] border-l shadow-2xl bg-gradient-to-b from-cyan-100 via-blue-100 to-blue-200 bg-opacity-90 backdrop-blur-md flex flex-col">
-            <Chatbot context={chatbotContext?.context} payload={chatbotContext?.payload} />
+          <div className="w-[400px] border-l shadow-lg bg-white flex flex-col">
+            <Chatbot />
           </div>
         )}
       </main>
