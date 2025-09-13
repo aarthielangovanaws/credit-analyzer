@@ -50,7 +50,7 @@ export default function Chatbot({ context, payload }) {
         body: JSON.stringify({ query: userMsg.text, email: sessionStorage.getItem("userEmail") })
       });
       const data = await res.json();
-      setMessages(prev => [...prev, { from: "assistant", text: data.message || 'No response from server' }]);
+      setMessages(prev => [...prev, { from: "assistant", text: data.response || 'No response from server' }]);
     } catch (e) {
       setMessages(prev => [...prev, { from: "assistant", text: 'Error fetching response' }]);
     }
