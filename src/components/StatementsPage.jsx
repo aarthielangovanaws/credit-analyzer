@@ -58,6 +58,11 @@ export default function StatementsPage() {
 
       const data = await response.json();
       setTransactions(data);
+      
+      // Trigger chatbot after transactions are loaded
+      if (window.triggerChatbot && typeof window.triggerChatbot === "function") {
+        window.triggerChatbot("chat");
+      }
     } catch (err) {
       console.error("Failed to fetch transactions:", err);
     } finally {
