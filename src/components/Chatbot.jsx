@@ -26,7 +26,7 @@ export default function Chatbot({ context, payload }) {
     
     // Only show welcome message on initial load
     if (isInitialLoad.current) {
-      let msg = "Hi 👋 I'm your credit assistant. What would you like help with today?";
+      let msg = "😴 Too tired to read this statement? Same. <br /> Fear not! I'm Credit Yoda - here to decode your spending mysteries 🔍";
       
       if(msg) setMessages(prev => [...prev, { from: "assistant", text: msg }]);
       isInitialLoad.current = false;
