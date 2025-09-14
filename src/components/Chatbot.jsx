@@ -6,42 +6,11 @@ export default function Chatbot({ context, payload }) {
   const messagesEndRef = useRef(null);
   
   // Define context-specific suggestions
-  const suggestions = {
-    dashboard: [
-      "Show me my spending trends",
-      "What's my credit utilization?",
-      "How can I improve my credit score?",
-      "Any unusual spending this month?"
-    ],
-    profile: [
-      "How do I update my email?",
-      "Change my notification preferences",
-      "What security features are available?",
-      "How do I update my income information?"
-    ],
-    support: [
-      "I need help with a transaction",
-      "How do I dispute a charge?",
-      "Contact customer service",
-      "Report a lost card"
-    ],
+  const suggestions = {    
     chat: [
-      "Tell me about my spending habits",
-      "How can I save more money?",
-      "What are my top spending categories?",
-      "Analyze my recent transactions"
-    ],
-    statements: [
-      "Explain my statement charges",
-      "Show me largest transactions",
-      "Compare to previous month",
-      "Any recurring subscriptions?"
-    ],
-    "statement-month": [
-      "Breakdown of spending categories",
-      "Unusual activity this month?",
-      "Compare to my budget",
-      "Suggest ways to reduce spending"
+      "Minimum payment to avoid interest?",
+      "Any suspicious transactions?",
+      "Spending summary please!"
     ]
   };
 
@@ -132,7 +101,7 @@ export default function Chatbot({ context, payload }) {
         {/* Suggestions */}
         {shouldShowSuggestions() && suggestions[context] && (
           <div className="mt-3 mb-2">
-            <p className="text-xs text-gray-500 mb-1">Quick suggestions:</p>
+            <p className="text-xs text-gray-500 mb-1">Ask me:</p>
             <div className="flex flex-wrap gap-2">
               {suggestions[context].map((suggestion, index) => (
                 <button
