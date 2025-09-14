@@ -1,19 +1,58 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 
 export default function Chatbot({ context, payload }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
+  
+  // Define context-specific suggestions
+  const suggestions = {
+    dashboard: [
+      "Show me my spending trends",
+      "What's my credit utilization?",
+      "How can I improve my credit score?",
+      "Any unusual spending this month?"
+    ],
+    profile: [
+      "How do I update my email?",
+      "Change my notification preferences",
+      "What security features are available?",
+      "How do I update my income information?"
+    ],
+    support: [
+      "I need help with a transaction",
+      "How do I dispute a charge?",
+      "Contact customer service",
+      "Report a lost card"
+    ],
+    chat: [
+      "Tell me about my spending habits",
+      "How can I save more money?",
+      "What are my top spending categories?",
+      "Analyze my recent transactions"
+    ],
+    statements: [
+      "Explain my statement charges",
+      "Show me largest transactions",
+      "Compare to previous month",
+      "Any recurring subscriptions?"
+    ],
+    "statement-month": [
+      "Breakdown of spending categories",
+      "Unusual activity this month?",
+      "Compare to my budget",
+      "Suggest ways to reduce spending"
+    ]
+  };
 
   // When context or payload changes, push appropriate assistant message
   useEffect(() => {
     if(!context) return;
     let msg = "";
-    if(context === "dashboard") msg = "Here’s a summary of your finances this month...";
+    if(context === "dashboard") msg = "Here's a summary of your finances this month. How can I help?";
     else if(context === "profile") msg = "Would you like to update your personal details or preferences?";
     else if(context === "support") msg = "How can I help you today?";
-    else if(context === "chat") msg = "Hi 👋 I’m your credit assistant. What would you like help with today?";
+    else if(context === "chat") msg = "Hi 👋 I'm your credit assistant. What would you like help with today?";
     else if(context === "statements") msg = "Here are your monthly statements. Select a month to get insights.";
     else if(context === "statement-month" && payload?.month) {
       (async () => {
@@ -37,11 +76,16 @@ export default function Chatbot({ context, payload }) {
     }
   }, [messages]);
 
-  const handleSend = async () => {
-    if(!input.trim()) return;
-    const userMsg = { from: "user", text: input.trim() };
+  const handleSend = async (messageText = null) => {
+    const textToSend = messageText || input.trim();
+    if(!textToSend) return;
+    
+    const userMsg = { from: "user", text: textToSend };
     setMessages(prev => [...prev, userMsg]);
-    setInput("");
+    
+    if (!messageText) {
+      setInput(""); // Only clear input if it wasn't a suggestion click
+    }
     
     try {
       const res = await fetch('https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/query', {
@@ -56,37 +100,73 @@ export default function Chatbot({ context, payload }) {
     }
   };
 
+  const handleSuggestionClick = (suggestion) => {
+    handleSend(suggestion);
+  };
+
+  // Check if we should show suggestions (only after the last assistant message)
+  const shouldShowSuggestions = () => {
+    if (messages.length === 0) return true;
+    const lastMessage = messages[messages.length - 1];
+    return lastMessage.from === "assistant";
+  };
+
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="bg-blue-600 text-white p-3 flex justify-between items-center">
-        <span>💬 Chat Assistant</span>
-        <button onClick={()=>window.closeChatbot()} className="text-white text-lg font-bold">✕</button>
+        <span>💬 Credit Assistant</span>
+        <button onClick={() => window.closeChatbot && window.closeChatbot()} className="text-white text-lg font-bold">✕</button>
       </div>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-3 bg-gray-50">
-        {messages.map((m,i)=>(
-          <div key={i} className={`my-2 flex ${m.from==="user"?"justify-end":"justify-start"}`}>
-            <div className={`px-3 py-2 rounded-lg max-w-[80%] font-semibold ${m.from==="user"?"bg-blue-600 text-white":"bg-gray-200 text-black"}`}>
+        {messages.map((m, i) => (
+          <div key={i} className={`my-2 flex ${m.from === "user" ? "justify-end" : "justify-start"}`}>
+            <div className={`px-3 py-2 rounded-lg max-w-[80%] font-semibold ${m.from === "user" ? "bg-blue-600 text-white" : "bg-gray-200 text-black"}`}>
               {m.text}
             </div>
           </div>
         ))}
+        
+        {/* Suggestions */}
+        {shouldShowSuggestions() && suggestions[context] && (
+          <div className="mt-3 mb-2">
+            <p className="text-xs text-gray-500 mb-1">Quick suggestions:</p>
+            <div className="flex flex-wrap gap-2">
+              {suggestions[context].map((suggestion, index) => (
+                <button
+                  key={index}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition-colors"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        
         <div ref={messagesEndRef} />
       </div>
 
       {/* Input */}
-      <div className="p-2 border-t flex gap-2">
+      <div className="p-3 border-t flex gap-2 bg-white">
         <input 
           type='text'
           value={input}
-          onChange={e=>setInput(e.target.value)}
-          onKeyDown={e=>{if(e.key==='Enter') handleSend();}}
+          onChange={e => setInput(e.target.value)}
+          onKeyDown={e => { if(e.key === 'Enter') handleSend(); }}
           placeholder='Type your question...'
-          className="flex-1 p-2 border rounded-lg"
+          className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
-        <button onClick={handleSend} className="bg-blue-600 text-white px-4 py-2 rounded-lg">Send</button>
+        <button 
+          onClick={() => handleSend()} 
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          disabled={!input.trim()}
+        >
+          Send
+        </button>
       </div>
     </div>
   );
