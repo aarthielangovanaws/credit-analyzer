@@ -136,8 +136,8 @@ export default function Chatbot({ context, payload }) {
         {/* Suggestions */}
         {shouldShowSuggestions() && suggestions[context] && (
           <div className="mt-3 mb-2">
-            <p className="text-xs text-gray-500 mb-1">Ask me:</p>
-            <div className="flex flex-wrap gap-2">
+            <p className="text-xs text-gray-500 mb-2">Ask me:</p>
+            <div className="flex flex-col gap-2">
               {suggestions[context].map((suggestion, index) => {
                 // Format the suggestion text to include the month if applicable
                 let displaySuggestion = suggestion;
@@ -154,12 +154,9 @@ export default function Chatbot({ context, payload }) {
                   <button
                     key={index}
                     onClick={() => handleSuggestionClick(suggestion)}
-                    className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition-colors"
-                    title={displaySuggestion}
+                    className="text-sm bg-blue-100 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-200 transition-colors text-left w-full whitespace-normal break-words"
                   >
-                    {displaySuggestion.length > 35 
-                      ? displaySuggestion.substring(0, 32) + '...' 
-                      : displaySuggestion}
+                    {displaySuggestion}
                   </button>
                 );
               })}
