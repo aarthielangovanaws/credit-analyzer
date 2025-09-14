@@ -4,6 +4,7 @@ export default function Chatbot({ context, payload }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
+  const isInitialLoad = useRef(true);
   
   // Define context-specific suggestions
   const suggestions = {    
@@ -22,9 +23,14 @@ export default function Chatbot({ context, payload }) {
   // When context or payload changes, push appropriate assistant message
   useEffect(() => {
     if(!context) return;
-    let msg = "Hi 👋 I'm your credit assistant. What would you like help with today?";
     
-    if(msg) setMessages(prev => [...prev, { from: "assistant", text: msg }]);
+    // Only show welcome message on initial load
+    if (isInitialLoad.current) {
+      let msg = "Hi 👋 I'm your credit assistant. What would you like help with today?";
+      
+      if(msg) setMessages(prev => [...prev, { from: "assistant", text: msg }]);
+      isInitialLoad.current = false;
+    }
   }, [context, payload]);
 
   useEffect(() => {
