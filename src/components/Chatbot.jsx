@@ -11,6 +11,13 @@ export default function Chatbot({ context, payload }) {
       "Minimum payment to avoid interest?",
       "Any suspicious transactions?",
       "Spending summary please!"
+    ],
+    "statement-month": [
+      "Minimum payment to avoid interest?",
+      "Any suspicious transactions?",
+      "Spending summary please!",
+      "Breakdown of spending categories",
+      "Unusual activity this month?"
     ]
   };
 
@@ -70,7 +77,35 @@ export default function Chatbot({ context, payload }) {
   };
 
   const handleSuggestionClick = (suggestion) => {
-    handleSend(suggestion);
+    // Append the month to the suggestion if we're in statement-month context
+    let finalSuggestion = suggestion;
+    if (context === "statement-month" && payload?.month) {
+      // Format the month for display
+      const formatMonthYear = (dateString) => {
+        try {
+          const date = new Date(dateString);
+          return date.toLocaleDateString("en-US", {
+            month: "long",
+            year: "numeric",
+          });
+        } catch (error) {
+          return dateString;
+        }
+      };
+      
+      const formattedMonth = formatMonthYear(payload.month);
+      
+      // Check if the suggestion already ends with a question mark
+      if (suggestion.endsWith('?')) {
+        // Insert the month before the question mark
+        finalSuggestion = suggestion.slice(0, -1) + ` in ${formattedMonth}?`;
+      } else {
+        // Just append the month
+        finalSuggestion = suggestion + ` for ${formattedMonth}`;
+      }
+    }
+    
+    handleSend(finalSuggestion);
   };
 
   // Check if we should show suggestions (only after the last assistant message)
@@ -78,6 +113,19 @@ export default function Chatbot({ context, payload }) {
     if (messages.length === 0) return true;
     const lastMessage = messages[messages.length - 1];
     return lastMessage.from === "assistant";
+  };
+
+  // Format month for display in suggestions
+  const formatMonthYear = (dateString) => {
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+      });
+    } catch (error) {
+      return dateString;
+    }
   };
 
   return (
@@ -103,15 +151,31 @@ export default function Chatbot({ context, payload }) {
           <div className="mt-3 mb-2">
             <p className="text-xs text-gray-500 mb-1">Ask me:</p>
             <div className="flex flex-wrap gap-2">
-              {suggestions[context].map((suggestion, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleSuggestionClick(suggestion)}
-                  className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition-colors"
-                >
-                  {suggestion}
-                </button>
-              ))}
+              {suggestions[context].map((suggestion, index) => {
+                // Format the suggestion text to include the month if applicable
+                let displaySuggestion = suggestion;
+                if (context === "statement-month" && payload?.month) {
+                  const formattedMonth = formatMonthYear(payload.month);
+                  if (suggestion.endsWith('?')) {
+                    displaySuggestion = suggestion.slice(0, -1) + ` in ${formattedMonth}?`;
+                  } else {
+                    displaySuggestion = suggestion + ` for ${formattedMonth}`;
+                  }
+                }
+                
+                return (
+                  <button
+                    key={index}
+                    onClick={() => handleSuggestionClick(suggestion)}
+                    className="text-xs bg-blue-100 text-blue-700 px-3 py-1 rounded-full hover:bg-blue-200 transition-colors"
+                    title={displaySuggestion}
+                  >
+                    {displaySuggestion.length > 35 
+                      ? displaySuggestion.substring(0, 32) + '...' 
+                      : displaySuggestion}
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
