@@ -29,7 +29,7 @@ export default function Chatbot({ context, payload }) {
       let msg = (
         <div>
           <div>😴 Too tired to read this statement? Same.</div>
-          <div />
+          <br />
           <div>Fear not! I'm Credit Yoda - here to decode your spending mysteries 🔍</div>
         </div>
       );
