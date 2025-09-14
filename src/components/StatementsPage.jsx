@@ -61,7 +61,7 @@ export default function StatementsPage() {
       
       // Trigger chatbot after transactions are loaded
       if (window.triggerChatbot && typeof window.triggerChatbot === "function") {
-        window.triggerChatbot("chat");
+        window.triggerChatbot("chat", {month});
       }
     } catch (err) {
       console.error("Failed to fetch transactions:", err);
