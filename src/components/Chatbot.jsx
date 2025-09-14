@@ -15,34 +15,15 @@ export default function Chatbot({ context, payload }) {
     "statement-month": [
       "Minimum payment to avoid interest?",
       "Any suspicious transactions?",
-      "Spending summary please!",
-      "Breakdown of spending categories",
-      "Unusual activity this month?"
+      "Spending summary please!"
     ]
   };
 
   // When context or payload changes, push appropriate assistant message
   useEffect(() => {
     if(!context) return;
-    let msg = "";
-    if(context === "dashboard") msg = "Here's a summary of your finances this month. How can I help?";
-    else if(context === "profile") msg = "Would you like to update your personal details or preferences?";
-    else if(context === "support") msg = "How can I help you today?";
-    else if(context === "chat") msg = "Hi 👋 I'm your credit assistant. What would you like help with today?";
-    else if(context === "statements") msg = "Here are your monthly statements. Select a month to get insights.";
-    else if(context === "statement-month" && payload?.month) {
-      (async () => {
-        try {
-          const res = await fetch(`/api/statements/analyze/${encodeURIComponent(payload.month)}`);
-          const data = await res.json();
-          const m = data.message || "Here are your insights for " + payload.month;
-          setMessages(prev => [...prev, { from: "assistant", text: m }]);
-        } catch(e) {
-          setMessages(prev => [...prev, { from: "assistant", text: "Sorry, I couldn't fetch insights for " + payload.month }]);
-        }
-      })();
-      return;
-    }
+    let msg = "Hi 👋 I'm your credit assistant. What would you like help with today?";
+    
     if(msg) setMessages(prev => [...prev, { from: "assistant", text: msg }]);
   }, [context, payload]);
 
