@@ -26,7 +26,12 @@ export default function Chatbot({ context, payload }) {
     
     // Only show welcome message on initial load
     if (isInitialLoad.current) {
-      let msg = "😴 Too tired to read this statement? Same. <br /> Fear not! I'm Credit Yoda - here to decode your spending mysteries 🔍";
+      let msg = (
+        <div>
+          <div>😴 Too tired to read this statement? Same.</div>
+          <div>Fear not! I'm Credit Yoda - here to decode your spending mysteries 🔍</div>
+        </div>
+      );
       
       if(msg) setMessages(prev => [...prev, { from: "assistant", text: msg }]);
       isInitialLoad.current = false;
@@ -119,7 +124,7 @@ export default function Chatbot({ context, payload }) {
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="bg-blue-600 text-white p-3 flex justify-between items-center">
-        <span>💬 Credit Assistant</span>
+        <span>💬 Credit Yoda</span>
         <button onClick={() => window.closeChatbot && window.closeChatbot()} className="text-white text-lg font-bold">✕</button>
       </div>
 
@@ -128,7 +133,7 @@ export default function Chatbot({ context, payload }) {
         {messages.map((m, i) => (
           <div key={i} className={`my-2 flex ${m.from === "user" ? "justify-end" : "justify-start"}`}>
             <div className={`px-3 py-2 rounded-lg max-w-[80%] font-semibold ${m.from === "user" ? "bg-blue-600 text-white" : "bg-gray-200 text-black"}`}>
-              {m.text}
+              {typeof m.text === 'string' ? m.text : m.text}
             </div>
           </div>
         ))}
