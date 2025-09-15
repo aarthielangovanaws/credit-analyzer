@@ -1,5 +1,26 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+// Typing indicator component
+function TypingIndicator() {
+  return (
+    <div className="flex items-center space-x-1">
+      <span
+        className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+        style={{ animationDelay: "0ms" }}
+      ></span>
+      <span
+        className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+        style={{ animationDelay: "150ms" }}
+      ></span>
+      <span
+        className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+        style={{ animationDelay: "300ms" }}
+      ></span>
+      <span className="ml-2 italic text-gray-500">Credit Yoda is thinking...</span>
+    </div>
+  );
+}
+
 export default function Chatbot({ context, payload }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -8,7 +29,7 @@ export default function Chatbot({ context, payload }) {
   const isInitialLoad = useRef(true);
 
   // Define context-specific suggestions
-  const suggestions = {    
+  const suggestions = {
     chat: [
       "Minimum payment to avoid interest?",
       "Any suspicious transactions?",
@@ -36,7 +57,7 @@ export default function Chatbot({ context, payload }) {
 
   // Show welcome message only once
   useEffect(() => {
-    if(!context) return;
+    if (!context) return;
     if (isInitialLoad.current) {
       const msg = (
         <div>
@@ -51,33 +72,39 @@ export default function Chatbot({ context, payload }) {
   }, [context, payload]);
 
   useEffect(() => {
-    if(messagesEndRef.current){
+    if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
   const handleSend = async (messageText = null) => {
     const textToSend = messageText || input.trim();
-    if(!textToSend) return;
-    
+    if (!textToSend) return;
+
     const userMsg = { from: "user", text: textToSend };
     setMessages(prev => [...prev, userMsg]);
-    
-    if (!messageText) setInput(""); 
+
+    if (!messageText) setInput("");
 
     // Show temporary "thinking" message
     setLoading(true);
     setMessages(prev => [
       ...prev,
-      { from: "assistant", text: <span className="italic text-gray-500">Credit Yoda is thinking...</span>, isTemp: true }
+      { from: "assistant", text: <TypingIndicator />, isTemp: true }
     ]);
-    
+
     try {
-      const res = await fetch('https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/query', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ query: userMsg.text, email: sessionStorage.getItem("userEmail") })
-      });
+      const res = await fetch(
+        "https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/query",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query: userMsg.text,
+            email: sessionStorage.getItem("userEmail")
+          })
+        }
+      );
 
       const data = await res.json();
       const botReply = data.response?.trim();
@@ -92,7 +119,6 @@ export default function Chatbot({ context, payload }) {
           { from: "assistant", text: botReply || getRandomFallback() }
         ];
       });
-
     } catch (e) {
       setMessages(prev => {
         const newMsgs = [...prev];
@@ -121,7 +147,7 @@ export default function Chatbot({ context, payload }) {
         }
       };
       const formattedMonth = formatMonthYear(payload.month);
-      if (suggestion.endsWith('?')) {
+      if (suggestion.endsWith("?")) {
         finalSuggestion = suggestion.slice(0, -1) + ` in ${formattedMonth}?`;
       } else {
         finalSuggestion = suggestion + ` for ${formattedMonth}`;
@@ -153,19 +179,33 @@ export default function Chatbot({ context, payload }) {
       {/* Header */}
       <div className="bg-[#fbc600] text-black p-3 flex justify-between items-center">
         <span>💬 Credit Yoda</span>
-        <button onClick={() => window.closeChatbot && window.closeChatbot()} className="text-black text-lg font-bold">✕</button>
+        <button
+          onClick={() => window.closeChatbot && window.closeChatbot()}
+          className="text-black text-lg font-bold"
+        >
+          ✕
+        </button>
       </div>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-3 bg-gray-50">
         {messages.map((m, i) => (
-          <div key={i} className={`my-2 flex ${m.from === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`px-3 py-2 rounded-lg max-w-[80%] font-semibold ${m.from === "user" ? "bg-[#fbc600] text-black" : "bg-gray-200 text-black"}`}>
-              {typeof m.text === 'string' ? m.text : m.text}
+          <div
+            key={i}
+            className={`my-2 flex ${m.from === "user" ? "justify-end" : "justify-start"}`}
+          >
+            <div
+              className={`px-3 py-2 rounded-lg max-w-[80%] font-semibold ${
+                m.from === "user"
+                  ? "bg-[#fbc600] text-black"
+                  : "bg-gray-200 text-black"
+              }`}
+            >
+              {typeof m.text === "string" ? m.text : m.text}
             </div>
           </div>
         ))}
-        
+
         {/* Suggestions */}
         {shouldShowSuggestions() && suggestions[context] && (
           <div className="mt-3 mb-2">
@@ -175,13 +215,14 @@ export default function Chatbot({ context, payload }) {
                 let displaySuggestion = suggestion;
                 if (context === "statement-month" && payload?.month) {
                   const formattedMonth = formatMonthYear(payload.month);
-                  if (suggestion.endsWith('?')) {
-                    displaySuggestion = suggestion.slice(0, -1) + ` in ${formattedMonth}?`;
+                  if (suggestion.endsWith("?")) {
+                    displaySuggestion =
+                      suggestion.slice(0, -1) + ` in ${formattedMonth}?`;
                   } else {
                     displaySuggestion = suggestion + ` for ${formattedMonth}`;
                   }
                 }
-                
+
                 return (
                   <button
                     key={index}
@@ -195,22 +236,24 @@ export default function Chatbot({ context, payload }) {
             </div>
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
 
       {/* Input */}
       <div className="p-3 border-t flex gap-2 bg-white">
-        <input 
-          type='text'
+        <input
+          type="text"
           value={input}
-          onChange={e => setInput(e.target.value)}
-          onKeyDown={e => { if(e.key === 'Enter') handleSend(); }}
-          placeholder='Type your question...'
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSend();
+          }}
+          placeholder="Type your question..."
           className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fbc600]"
         />
-        <button 
-          onClick={() => handleSend()} 
+        <button
+          onClick={() => handleSend()}
           className="bg-[#fbc600] text-black px-4 py-2 rounded-lg hover:bg-[#e0ad00] transition-colors"
           disabled={!input.trim() || loading}
         >
