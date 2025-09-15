@@ -49,7 +49,7 @@ export default function Login({ onLogin }) {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#fbc600] to-[#e0ad00] p-6">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
         {/* Header */}
         <div className="mb-6 text-center">
@@ -66,7 +66,7 @@ export default function Login({ onLogin }) {
             </label>
             <input
               type="email"
-              className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 placeholder-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
+              className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 placeholder-gray-400 focus:border-[#fbc600] focus:ring-2 focus:ring-[#fbc600] focus:outline-none transition"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -81,7 +81,7 @@ export default function Login({ onLogin }) {
             </label>
             <input
               type="password"
-              className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 placeholder-gray-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"
+              className="mt-1 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-800 placeholder-gray-400 focus:border-[#fbc600] focus:ring-2 focus:ring-[#fbc600] focus:outline-none transition"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -97,7 +97,7 @@ export default function Login({ onLogin }) {
           {/* Submit */}
           <button
             type="submit"
-            className="w-full py-2.5 rounded-lg bg-indigo-600 text-white font-semibold shadow-md hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-300 transition disabled:opacity-70 disabled:cursor-not-allowed"
+            className="w-full py-2.5 rounded-lg bg-[#fbc600] text-black font-semibold shadow-md hover:bg-[#e0ad00] focus:ring-4 focus:ring-[#fbc600]/50 transition disabled:opacity-70 disabled:cursor-not-allowed"
             disabled={loading}
           >
             {loading ? "Signing in..." : "Sign In"}
