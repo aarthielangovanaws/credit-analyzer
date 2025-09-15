@@ -3,31 +3,29 @@ import { FileText, Home, User, LifeBuoy, MessageCircle } from "lucide-react";
 
 export default function Sidebar() {
   return (
-    React.createElement("aside", { className: "w-64 bg-gradient-to-b from-blue-700 to-blue-900 text-white shadow-xl flex flex-col" },
+    React.createElement("aside", { className: "w-64 bg-gradient-to-b from-[#fbc600] to-[#e0ad00] text-black shadow-xl flex flex-col" },
       React.createElement("div", { className: "p-6 text-2xl font-extrabold tracking-tight" }, "Credit Coach"),
       React.createElement("nav", { className: "flex-1 px-4 py-2 space-y-2" },
-        React.createElement("a", { href: "#", onClick: () => window.triggerChatbot("dashboard"), className: "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition font-semibold" },
+        React.createElement("a", { href: "#", onClick: () => window.triggerChatbot("dashboard"), className: "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-black/10 transition font-semibold" },
           React.createElement(Home, { size: 20 }),
           "Dashboard"
         ),
-        React.createElement("a", { href: "#", className: "flex items-center gap-3 px-3 py-2 rounded-lg bg-white/20 font-semibold" },
+        React.createElement("a", { href: "#", className: "flex items-center gap-3 px-3 py-2 rounded-lg bg-black/20 font-semibold" },
           React.createElement(FileText, { size: 20 }),
           "Statements"
-        )
-        ,
-        React.createElement("a", { href: "#", onClick: () => window.triggerChatbot("profile"), className: "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition" },
+        ),
+        React.createElement("a", { href: "#", onClick: () => window.triggerChatbot("profile"), className: "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-black/10 transition" },
           React.createElement(User, { size: 20 }),
           "Profile"
         ),
-        React.createElement("a", { href: "#", onClick: () => window.triggerChatbot("support"), className: "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition" },
+        React.createElement("a", { href: "#", onClick: () => window.triggerChatbot("support"), className: "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-black/10 transition" },
           React.createElement(LifeBuoy, { size: 20 }),
           "Support"
         ),
-        React.createElement("a", { href: "#", onClick: () => window.triggerChatbot("chat"), className: "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 transition" },
+        React.createElement("a", { href: "#", onClick: () => window.triggerChatbot("chat"), className: "flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-black/10 transition" },
           React.createElement(MessageCircle, { size: 20 }),
           "Chat"
         )
-
       )
     )
   );
