@@ -3,9 +3,10 @@ import React, { useState, useEffect, useRef } from 'react';
 export default function Chatbot({ context, payload }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const isInitialLoad = useRef(true);
-  
+
   // Define context-specific suggestions
   const suggestions = {    
     chat: [
@@ -20,21 +21,31 @@ export default function Chatbot({ context, payload }) {
     ]
   };
 
-  // When context or payload changes, push appropriate assistant message
+  // Friendly fallback responses if API fails
+  const fallbackResponses = [
+    "🤔 Hmm... I couldn’t quite sense that. Can you rephrase your question?",
+    "My Jedi senses are weak on this one. Try asking differently 🙏",
+    "Sorry, I didn’t catch that. Could you reword it?",
+    "That question threw me off balance 🌀 Mind rephrasing it?",
+    "Hmm, I don’t have the answer right now — but ask me in another way!"
+  ];
+
+  const getRandomFallback = () => {
+    return fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+  };
+
+  // Show welcome message only once
   useEffect(() => {
     if(!context) return;
-    
-    // Only show welcome message on initial load
     if (isInitialLoad.current) {
-      let msg = (
+      const msg = (
         <div>
           <div>😴 Too tired to read this statement? Same.</div>
           <br />
           <div>Fear not! I'm Credit Yoda - here to decode your spending mysteries 🔍</div>
         </div>
       );
-      
-      if(msg) setMessages(prev => [...prev, { from: "assistant", text: msg }]);
+      setMessages(prev => [...prev, { from: "assistant", text: msg }]);
       isInitialLoad.current = false;
     }
   }, [context, payload]);
@@ -52,9 +63,14 @@ export default function Chatbot({ context, payload }) {
     const userMsg = { from: "user", text: textToSend };
     setMessages(prev => [...prev, userMsg]);
     
-    if (!messageText) {
-      setInput(""); // Only clear input if it wasn't a suggestion click
-    }
+    if (!messageText) setInput(""); 
+
+    // Show temporary "thinking" message
+    setLoading(true);
+    setMessages(prev => [
+      ...prev,
+      { from: "assistant", text: <span className="italic text-gray-500">Credit Yoda is thinking...</span>, isTemp: true }
+    ]);
     
     try {
       const res = await fetch('https://wad3lzse8k.execute-api.us-east-1.amazonaws.com/default/credit-analyzer-yoda/query', {
@@ -62,18 +78,37 @@ export default function Chatbot({ context, payload }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: userMsg.text, email: sessionStorage.getItem("userEmail") })
       });
+
       const data = await res.json();
-      setMessages(prev => [...prev, { from: "assistant", text: data.response || 'No response from server' }]);
+      const botReply = data.response?.trim();
+
+      setMessages(prev => {
+        const newMsgs = [...prev];
+        if (newMsgs.length > 0 && newMsgs[newMsgs.length - 1].isTemp) {
+          newMsgs.pop();
+        }
+        return [
+          ...newMsgs,
+          { from: "assistant", text: botReply || getRandomFallback() }
+        ];
+      });
+
     } catch (e) {
-      setMessages(prev => [...prev, { from: "assistant", text: 'Error fetching response' }]);
+      setMessages(prev => {
+        const newMsgs = [...prev];
+        if (newMsgs.length > 0 && newMsgs[newMsgs.length - 1].isTemp) {
+          newMsgs.pop();
+        }
+        return [...newMsgs, { from: "assistant", text: getRandomFallback() }];
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSuggestionClick = (suggestion) => {
-    // Append the month to the suggestion if we're in statement-month context
     let finalSuggestion = suggestion;
     if (context === "statement-month" && payload?.month) {
-      // Format the month for display
       const formatMonthYear = (dateString) => {
         try {
           const date = new Date(dateString);
@@ -85,30 +120,22 @@ export default function Chatbot({ context, payload }) {
           return dateString;
         }
       };
-      
       const formattedMonth = formatMonthYear(payload.month);
-      
-      // Check if the suggestion already ends with a question mark
       if (suggestion.endsWith('?')) {
-        // Insert the month before the question mark
         finalSuggestion = suggestion.slice(0, -1) + ` in ${formattedMonth}?`;
       } else {
-        // Just append the month
         finalSuggestion = suggestion + ` for ${formattedMonth}`;
       }
     }
-    
     handleSend(finalSuggestion);
   };
 
-  // Check if we should show suggestions (only after the last assistant message)
   const shouldShowSuggestions = () => {
     if (messages.length === 0) return true;
     const lastMessage = messages[messages.length - 1];
-    return lastMessage.from === "assistant";
+    return lastMessage.from === "assistant" && !loading;
   };
 
-  // Format month for display in suggestions
   const formatMonthYear = (dateString) => {
     try {
       const date = new Date(dateString);
@@ -145,7 +172,6 @@ export default function Chatbot({ context, payload }) {
             <p className="text-xs text-gray-500 mb-2">Ask me:</p>
             <div className="flex flex-col gap-2">
               {suggestions[context].map((suggestion, index) => {
-                // Format the suggestion text to include the month if applicable
                 let displaySuggestion = suggestion;
                 if (context === "statement-month" && payload?.month) {
                   const formattedMonth = formatMonthYear(payload.month);
@@ -186,9 +212,9 @@ export default function Chatbot({ context, payload }) {
         <button 
           onClick={() => handleSend()} 
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-          disabled={!input.trim()}
+          disabled={!input.trim() || loading}
         >
-          Send
+          {loading ? "..." : "Send"}
         </button>
       </div>
     </div>
