@@ -151,16 +151,16 @@ export default function Chatbot({ context, payload }) {
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
-      <div className="bg-blue-600 text-white p-3 flex justify-between items-center">
+      <div className="bg-[#fbc600] text-black p-3 flex justify-between items-center">
         <span>💬 Credit Yoda</span>
-        <button onClick={() => window.closeChatbot && window.closeChatbot()} className="text-white text-lg font-bold">✕</button>
+        <button onClick={() => window.closeChatbot && window.closeChatbot()} className="text-black text-lg font-bold">✕</button>
       </div>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-3 bg-gray-50">
         {messages.map((m, i) => (
           <div key={i} className={`my-2 flex ${m.from === "user" ? "justify-end" : "justify-start"}`}>
-            <div className={`px-3 py-2 rounded-lg max-w-[80%] font-semibold ${m.from === "user" ? "bg-blue-600 text-white" : "bg-gray-200 text-black"}`}>
+            <div className={`px-3 py-2 rounded-lg max-w-[80%] font-semibold ${m.from === "user" ? "bg-[#fbc600] text-black" : "bg-gray-200 text-black"}`}>
               {typeof m.text === 'string' ? m.text : m.text}
             </div>
           </div>
@@ -186,7 +186,7 @@ export default function Chatbot({ context, payload }) {
                   <button
                     key={index}
                     onClick={() => handleSuggestionClick(suggestion)}
-                    className="text-sm bg-blue-100 text-blue-700 px-4 py-2 rounded-lg hover:bg-blue-200 transition-colors text-left w-full whitespace-normal break-words"
+                    className="text-sm bg-[#fbc600]/20 text-[#fbc600] px-4 py-2 rounded-lg hover:bg-[#fbc600]/30 transition-colors text-left w-full whitespace-normal break-words"
                   >
                     {displaySuggestion}
                   </button>
@@ -207,11 +207,11 @@ export default function Chatbot({ context, payload }) {
           onChange={e => setInput(e.target.value)}
           onKeyDown={e => { if(e.key === 'Enter') handleSend(); }}
           placeholder='Type your question...'
-          className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#fbc600]"
         />
         <button 
           onClick={() => handleSend()} 
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="bg-[#fbc600] text-black px-4 py-2 rounded-lg hover:bg-[#e0ad00] transition-colors"
           disabled={!input.trim() || loading}
         >
           {loading ? "..." : "Send"}
