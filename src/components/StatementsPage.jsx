@@ -58,10 +58,10 @@ export default function StatementsPage() {
 
       const data = await response.json();
       setTransactions(data);
-      
+
       // Trigger chatbot after transactions are loaded
       if (window.triggerChatbot && typeof window.triggerChatbot === "function") {
-        window.triggerChatbot("statement-month", {month});
+        window.triggerChatbot("statement-month", { month });
       }
     } catch (err) {
       console.error("Failed to fetch transactions:", err);
@@ -82,6 +82,12 @@ export default function StatementsPage() {
       console.error("Error formatting date:", error);
       return dateString;
     }
+  };
+
+  // Format currency in USD
+  const formatUSD = (amount) => {
+    if (amount == null) return "";
+    return `$${amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
   };
 
   if (loading) {
@@ -140,8 +146,7 @@ export default function StatementsPage() {
                     {formatMonthYear(statement.month)}
                   </div>
                   <div className="text-sm text-gray-600">
-                    Amount: ₹
-                    {statement.total_spent?.toLocaleString("en-IN")}
+                    Amount: {formatUSD(statement.total_spent)}
                   </div>
                 </div>
               </div>
@@ -167,7 +172,7 @@ export default function StatementsPage() {
                         <th className="px-4 py-2 text-left border">Date</th>
                         <th className="px-4 py-2 text-left border">Reference No</th>
                         <th className="px-4 py-2 text-left border">Details</th>
-                        <th className="px-4 py-2 text-right border">Amount (₹)</th>
+                        <th className="px-4 py-2 text-right border">Amount ($)</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -179,7 +184,7 @@ export default function StatementsPage() {
                             {tx.transaction_details}
                           </td>
                           <td className="px-4 py-2 border text-right">
-                            {tx.amount?.toLocaleString("en-IN")}
+                            {formatUSD(tx.amount)}
                           </td>
                         </tr>
                       ))}
