@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 // Typing indicator component
 function TypingIndicator() {
   return (
-    <div className="flex items-center space-x-1">
+    <div className="flex space-x-1">
       <span className="ml-2 italic text-gray-500">Credit Yoda is thinking </span>
       <span
         className="w-1 h-1 bg-gray-400 rounded-full animate-bounce"
