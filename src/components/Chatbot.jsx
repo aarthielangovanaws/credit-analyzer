@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 function TypingIndicator() {
   return (
     <div className="flex items-center space-x-1">
+      <span className="ml-2 italic text-gray-500">Credit Yoda is thinking </span>
       <span
         className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
         style={{ animationDelay: "0ms" }}
@@ -15,8 +16,7 @@ function TypingIndicator() {
       <span
         className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
         style={{ animationDelay: "300ms" }}
-      ></span>
-      <span className="ml-2 italic text-gray-500">Credit Yoda is thinking...</span>
+      ></span>      
     </div>
   );
 }
@@ -37,18 +37,14 @@ export default function Chatbot({ context, payload }) {
     ],
     "statement-month": [
       "Minimum payment to avoid interest?",
-      "Any suspicious transactions?",
+      "Any unusual transactions?",
       "Spending summary please!"
     ]
   };
 
   // Friendly fallback responses if API fails
   const fallbackResponses = [
-    "🤔 Hmm... I couldn’t quite sense that. Can you rephrase your question?",
-    "My Jedi senses are weak on this one. Try asking differently 🙏",
-    "Sorry, I didn’t catch that. Could you reword it?",
-    "That question threw me off balance 🌀 Mind rephrasing it?",
-    "Hmm, I don’t have the answer right now — but ask me in another way!"
+    "Even Master Yoda gets confused sometimes! 🔮 Could you try asking differently?"
   ];
 
   const getRandomFallback = () => {
@@ -227,7 +223,7 @@ export default function Chatbot({ context, payload }) {
                   <button
                     key={index}
                     onClick={() => handleSuggestionClick(suggestion)}
-                    className="text-sm bg-[#fbc600]/20 text-[#fbc600] px-4 py-2 rounded-lg hover:bg-[#fbc600]/30 transition-colors text-left w-full whitespace-normal break-words"
+                    className="text-sm bg-[#fbc600]/20 px-4 py-2 rounded-lg hover:bg-[#fbc600]/30 transition-colors text-left w-full whitespace-normal break-words"
                   >
                     {displaySuggestion}
                   </button>
